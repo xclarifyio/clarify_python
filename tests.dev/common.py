@@ -4,7 +4,7 @@
 
 import sys
 sys.path.append('..')
-from clarify_python_2 import clarify
+from clarify_python import clarify
 
 
 def bundle_list_map(func):

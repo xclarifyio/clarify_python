@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 Some test functions used to sanity check during development. Not
@@ -7,7 +7,7 @@ unit tests.
 
 import sys
 sys.path.insert(0, '..')
-from clarify_python_2 import clarify
+from clarify_python import clarify
 import common
 
 
@@ -28,7 +28,7 @@ def update_name(href):
         name = 'no name updated'
     else:
         name = name + ' updated'
-        print '*** Updating name for ' + href
+        print('*** Updating name for ' + href)
     clarify.update_bundle(href, name)
 
 
@@ -36,7 +36,7 @@ def print_name(href):
     """Print the name of the bundle at href."""
 
     bundle = clarify.get_bundle(href)
-    print '*** ' + href + ' is now named "' + bundle['name'] + '"'
+    print('*** ' + href + ' is now named "' + bundle['name'] + '"')
 
 
 def all_tests(apikey):
@@ -44,13 +44,13 @@ def all_tests(apikey):
 
     clarify.set_key(apikey)
 
-    print '===== update_all_bundle_names() ====='
+    print('===== update_all_bundle_names() =====')
     update_all_bundle_names()
 
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        print('Usage: ' + sys.argv[0] + ' <apikey>')
         exit(1)
 
     all_tests(sys.argv[1])

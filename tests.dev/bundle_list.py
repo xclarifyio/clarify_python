@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 Some test functions used to sanity check during development. Not
@@ -7,7 +7,7 @@ unit tests.
 
 import sys
 sys.path.insert(0, '..')
-from clarify_python_2 import clarify
+from clarify_python import clarify
 import common
 
 def get_first_page_hrefs():
@@ -15,45 +15,45 @@ def get_first_page_hrefs():
 
     bundle_list = clarify.get_bundle_list()
 
-    print '*** Available bundles: ' + str(bundle_list['total'])
-    print '*** Printing first page of hrefs retrieved (max 10)...'
+    print('*** Available bundles: ' + str(bundle_list['total']))
+    print('*** Printing first page of hrefs retrieved (max 10)...')
     for i in bundle_list['_links']['items']:
-        print i['href']
+        print(i['href'])
 
 
 def get_all_bundle_hrefs():
     """Print all bundle hrefs."""
 
-    print '*** Printing all available bundle hrefs...'
+    print('*** Printing all available bundle hrefs...')
     common.bundle_list_map(print_href)
 
 
 def get_all_bundles():
     """Print all bundles."""
 
-    print '*** Printing all available bundle...'
+    print('*** Printing all available bundle...')
     common.bundle_list_map(print_bundle)
 
 
 def print_href(href):
     """Function to print an href."""
 
-    print href
+    print(href)
 
 
 def print_bundle(href):
     """Function to print an bundle from an href."""
 
     bundle = clarify.get_bundle(href)
-    print '* Bundle ' + bundle['id'] + '...'
+    print('* Bundle ' + bundle['id'] + '...')
     if 'name' in bundle:
-        print 'name: ' + bundle['name']
+        print('name: ' + bundle['name'])
     if 'external_id' in bundle:
-        print 'external_id: ' + bundle['external_id']
+        print('external_id: ' + bundle['external_id'])
     if 'notify_url' in bundle:
-        print 'notify_url: ' + bundle['notify_url']
-    print 'created: ' + bundle['created']
-    print 'updated: ' + bundle['updated']
+        print('notify_url: ' + bundle['notify_url'])
+    print('created: ' + bundle['created'])
+    print('updated: ' + bundle['updated'])
 
 
 def all_tests(apikey):
@@ -61,18 +61,18 @@ def all_tests(apikey):
 
     clarify.set_key(apikey)
 
-    print '===== get_first_page_hrefs() ====='
+    print('===== get_first_page_hrefs() =====')
     get_first_page_hrefs()
-    print '===== get_all_bundle_hrefs() ====='
+    print('===== get_all_bundle_hrefs() =====')
     get_all_bundle_hrefs()
-    print '===== get_all_bundles() ====='
+    print('===== get_all_bundles() =====')
     get_all_bundles()
 
 
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        print('Usage: ' + sys.argv[0] + ' <apikey>')
         exit(1)
 
     all_tests(sys.argv[1])

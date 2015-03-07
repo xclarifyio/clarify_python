@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 Some test functions used to sanity check during development. Not
@@ -37,7 +37,7 @@ def all_tests(apikey=None):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print 'Usage: ' + sys.argv[0] + ' <apikey>'
+        print('Usage: ' + sys.argv[0] + ' <apikey>')
         exit(1)
 
     all_tests(sys.argv[1])
