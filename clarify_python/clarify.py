@@ -1090,27 +1090,58 @@ def process_embed_override(href_embed=None,
                          embed_tracks=final_tracks,
                          embed_metadata=final_metadata)
 
-def get_embedded_items(result_object):
+def get_embedded_items(result_collection):
     """
-    Given a result_object (returned by a previous API call), return
-    a list of embedded items.
+    Given a result_collection (returned by a previous API call that
+    returns a collection, like get_bundle_list() or search()), return a
+    list of embedded items with each item in the returned list
+    considered a result object.
 
-    'result_object' a JSON object returned by a previous API call. May not
-    be None.
+    'result_collection' a JSON object returned by a previous API
+    call. The parameter 'embed_items' must have been True when the
+    result_collection was originally requested.May not be None.
 
     Returns a list, which may be empty if no embedded items were found.
     """
 
     # Argument error checking.
-    assert result_object is not None
+    assert result_collection is not None
 
     result = []
 
-    embedded_objects = result_object['_embedded']
-    if embedded_objects:
-        result = embedded_objects['items']
+    embedded_objects = result_collection.get('_embedded')
+    if embedded_objects is not None:
+        # Handle being passed a non-collection gracefully.
+        result = embedded_objects.get('items', result)
 
     return result
+
+def get_item_hrefs(result_collection):
+    """
+    Given a result_collection (returned by a previous API call that
+    returns a collection, like get_bundle_list() or search()), return a
+    list of item hrefs.
+
+    'result_collection' a JSON object returned by a previous API
+    call.
+
+    Returns a list, which may be empty if no items were found.
+    """
+
+    # Argument error checking.
+    assert result_collection is not None
+
+    result = []
+
+    links = result_collection.get('_links')
+    if links is not None:
+        items = links.get('items')
+        if items is not None:
+            for item in items:
+                result.append(item.get('href'))
+
+    return result
+    
 
 def get_link_href(result_object, link_relation):
     """
@@ -1138,19 +1169,21 @@ def get_link_href(result_object, link_relation):
 def get_embedded(result_object, link_relation):
     """
     Given a result_object (returned by a previous API call), return
-    the embedded object for link_relation.
+    the embedded object for link_relation.  The returned object can be
+    treated as a result object in its own right.
     
-    'result_object' a JSON object returned by a previous API call. This
-    is one of the items extracted from the '_embedded' list, either by
-    index reference or iterating after a call to
-    get_embedded_items(). May not be None.
-    'link_relation' the link relation for which href is required.
+    'result_object' a JSON object returned by a previous API call.
+    The link relation of teh embedded object must have been specified
+    when the result_object was originally requested. May not be None.
+    'link_relation' the link relation for which href is required. May
+    not be None.
     
     Returns None if the embedded object does not exist.
     """
 
     # Argument error checking.
     assert result_object is not None
+    assert link_relation is not None
 
     result = None
     

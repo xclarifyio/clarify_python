@@ -3,6 +3,12 @@
 History
 -------
 
+1.0.4 (2015-03-08)
+++++++++++++++++++
+
+* Added get_item_hrefs() utility function.
+* Utility function cleanup.
+
 1.0.3 (2015-03-07)
 ++++++++++++++++++
 
