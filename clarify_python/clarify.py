@@ -5,20 +5,21 @@
 
 import sys
 import collections
-import http.client
+import urllib3
+import certifi
 import urllib.parse
 import json
 from clarify_python.constants import __version__
 from clarify_python.constants import __api_version__
 from clarify_python.constants import __api_lib_name__
 from clarify_python.constants import __host__
-from clarify_python.constants import __debug_level__
 
 BUNDLES_PATH = 'bundles'
 SEARCH_PATH = 'search'
 PYTHON_VERSION = '.'.join(str(i) for i in sys.version_info[:3])
 
-KEY = None
+KEY = None # Our key.
+CONN = None # Our connection pool.
 
 # The API functions.
 
@@ -127,15 +128,16 @@ def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
     path = url_components.path
     data = urllib.parse.parse_qs(url_components.query)
 
+    # Change all lists into discrete values.
+    for key in data.keys():
+        data[key] = data[key][0]
+        
     # Deal with limit overriding.
     if limit is not None:
         data['limit'] = limit
 
     # Deal with embeds overriding.
-    href_embed = None
-    if 'embed' in data:
-        href_embed = data['embed'][0]  # parse_qs puts values in a list.
-    final_embed = process_embed_override(href_embed,
+    final_embed = process_embed_override(data.get('embed'),
                                          embed_items,
                                          embed_tracks,
                                          embed_metadata)
@@ -145,6 +147,10 @@ def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
     raw_result = get(path, data)
 
     if raw_result.status < 200 or raw_result.status > 202:
+        print('*****')
+        print(raw_result.status)
+        print(raw_result.json)
+        print('*****')
         raise APIException(raw_result.status, raw_result.json)
     else:
         result = raw_result.json
@@ -681,15 +687,16 @@ def _search_pn(href=None, limit=None,
     path = url_components.path
     data = urllib.parse.parse_qs(url_components.query)
 
+    # Change all lists into discrete values.
+    for key in data.keys():
+        data[key] = data[key][0]
+
     # Deal with limit overriding.
     if limit is not None:
         data['limit'] = limit
 
     # Deal with embeds overriding.
-    href_embed = None
-    if 'embed' in data:
-        href_embed = data['embed'][0]  # parse_qs puts values in a list.
-    final_embed = process_embed_override(href_embed,
+    final_embed = process_embed_override(data.get('embed'),
                                          embed_items,
                                          embed_tracks,
                                          embed_metadata)
@@ -716,10 +723,22 @@ Result = collections.namedtuple('Result', ['status', 'json'])
 
 
 def set_key(key):
-    """The API key.  May not be None."""
+    """
+    Set the API key.
+
+    'key' the API key.  May not be None.
+    """
     global KEY
     assert key is not None
     KEY = key
+
+    # As a side-effect of setting the key, we initialize our HTTPS
+    # connection pool. This method should now be called init().
+
+    global CONN
+    CONN = urllib3.HTTPSConnectionPool(__host__, maxsize=1,
+                                       cert_reqs='CERT_REQUIRED',
+                                       ca_certs=certifi.where())
 
 def _get_headers():
     """Get all the headers we're going to need:
@@ -760,24 +779,17 @@ def get(path, data=None):
     # Argument error checking.
     assert path is not None
 
-    # Open our connection.
-    connection = http.client.HTTPSConnection(__host__)
-    if __debug_level__ > 0:
-        connection.set_debuglevel(__debug_level__)
-
     # Execute the request.
-    fullpath = path
-    if data is not None:
-        fullpath += '?' + urllib.parse.urlencode(data, True)
-    connection.request('GET', fullpath, '', _get_headers())
-    response = connection.getresponse()
+    response = CONN.request('GET', path, data, _get_headers())
+                                       
+#     fullpath = path
+#     if data is not None:
+#         fullpath += '?' + urllib.parse.urlencode(data, True)
+#     response = CONN.request('GET', fullpath, '', _get_headers())
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read().decode()
-
-    # Close our connection.
-    connection.close()
+    response_content = response.data.decode()
 
     return Result(status=response_status, json=response_content)
 
@@ -800,24 +812,15 @@ def post(path, data):
     assert path is not None
     assert data is None or isinstance(data, dict)
 
-    # Open our connection.
-    connection = http.client.HTTPSConnection(__host__)
-    if __debug_level__ > 0:
-        connection.set_debuglevel(__debug_level__)
-
     # Execute the request.
-    encoded_data = ''
-    if data is not None:
-        encoded_data = urllib.parse.urlencode(data, True)
-    connection.request('POST', path, encoded_data, _get_headers())
-    response = connection.getresponse()
+    if data is None:
+        data = {}
+    response = CONN.request_encode_body('POST', path, data,
+                                        _get_headers(), False)
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read().decode()
-
-    # Close our connection.
-    connection.close()
+    response_content = response.data.decode()
 
     return Result(status=response_status, json=response_content)
 
@@ -839,24 +842,17 @@ def delete(path, data=None):
     assert path is not None
     assert data is None or isinstance(data, dict)
 
-    # Open our connection.
-    connection = http.client.HTTPSConnection(__host__)
-    if __debug_level__ > 0:
-        connection.set_debuglevel(__debug_level__)
-
     # Execute the request.
-    encoded_data = ''
-    if data is not None:
-        encoded_data = urllib.parse.urlencode(data, True)
-    connection.request('DELETE', path, encoded_data, _get_headers())
-    response = connection.getresponse()
+    response = CONN.request('DELETE', path, data, _get_headers())
+    
+#     encoded_data = ''
+#     if data is not None:
+#         encoded_data = urllib.parse.urlencode(data, True)
+#     response = CONN.request('DELETE', path, encoded_data, _get_headers())
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read().decode()
-
-    # Close our connection.
-    connection.close()
+    response_content = response.data.decode()
 
     # return (status, json)
     return Result(status=response_status, json=response_content)
@@ -879,24 +875,15 @@ def put(path, data):
     assert path is not None
     assert data is None or isinstance(data, dict)
 
-    # Open our connection.
-    connection = http.client.HTTPSConnection(__host__)
-    if __debug_level__ > 0:
-        connection.set_debuglevel(__debug_level__)
-
     # Execute the request.
-    encoded_data = ''
-    if data is not None:
-        encoded_data = urllib.parse.urlencode(data, True)
-    connection.request('PUT', path, encoded_data, _get_headers())
-    response = connection.getresponse()
+    if data is None:
+        data = {}
+    response = CONN.request_encode_body('PUT', path, data,
+                                        _get_headers(), False)
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read().decode()
-
-    # Close our connection.
-    connection.close()
+    response_content = response.data.decode()
 
     return Result(status=response_status, json=response_content)
 

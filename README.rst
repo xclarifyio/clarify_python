@@ -9,6 +9,22 @@ Python 3.x helper library for the Clarify API
 Installing
 ----------
 
+This version of the SDK depends on urllib3 for connection reuse and pooling. If you don't already have urllib3 installed:
+
+.. code-block:: bash
+
+   $ pip install urllib3
+
+Also, since we check SSL certs, you'll need the certifi library:
+
+.. code-block:: bash
+
+   $ pip install certifi
+
+Note that this release has been tested against 1.10.2. If you run into any problems with other releases, please let us know.
+
+You're now ready to install the Clarify SDK:
+
 .. code-block:: bash
 
    $ pip install clarify_python

@@ -3,6 +3,12 @@
 History
 -------
 
+1.1.0 (2015-03-08)
+++++++++++++++++++
+
+* Switched from http.client to urllib3.
+* Eliminated support for setting HTTP debug level. Use Runscope.
+
 1.0.4 (2015-03-08)
 ++++++++++++++++++
 
