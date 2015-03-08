@@ -8,11 +8,11 @@ import collections
 import http.client
 import urllib.parse
 import json
-from constants import __version__
-from constants import __api_version__
-from constants import __api_lib_name__
-from constants import __host__
-from constants import __debug_level__
+from clarify_python.constants import __version__
+from clarify_python.constants import __api_version__
+from clarify_python.constants import __api_lib_name__
+from clarify_python.constants import __host__
+from clarify_python.constants import __debug_level__
 
 BUNDLES_PATH = 'bundles'
 SEARCH_PATH = 'search'
@@ -123,9 +123,9 @@ def _get_additional_bundle_list(href=None, limit=None, embed_items=None,
 
     If the response status is not 2xx, throws an APIException."""
 
-    url_components = urlparse.urlparse(href)
+    url_components = urllib.parse.urlparse(href)
     path = url_components.path
-    data = urlparse.parse_qs(url_components.query)
+    data = urllib.parse.parse_qs(url_components.query)
 
     # Deal with limit overriding.
     if limit is not None:
@@ -205,24 +205,6 @@ def create_bundle(name=None, media_url=None, audio_channel=None,
         raise APIDataException(exception, raw_result.json, msg)
 
     return result
-
-
-# def delete_bundle(href=None):
-#     """Delete a bundle.
-
-#     'href' the relative href to the bundle. May not be None.
-
-#     Returns nothing.
-
-#     If the response status is not 204, throws an APIException."""
-
-#     # Argument error checking.
-#     assert href is not None
-
-#     raw_result = delete(href)
-
-#     if raw_result.status != 204:
-#         raise APIException(raw_result.status, raw_result.json)
 
 def delete_bundle(href=None):
     """
@@ -695,9 +677,9 @@ def _search_pn(href=None, limit=None,
                embed_items=None, embed_tracks=None, embed_metadata=None):
     """Function called to retrieve pages 2-n."""
 
-    url_components = urlparse.urlparse(href)
+    url_components = urllib.parse.urlparse(href)
     path = url_components.path
-    data = urlparse.parse_qs(url_components.query)
+    data = urllib.parse.parse_qs(url_components.query)
 
     # Deal with limit overriding.
     if limit is not None:
@@ -792,7 +774,7 @@ def get(path, data=None):
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read()
+    response_content = response.read().decode()
 
     # Close our connection.
     connection.close()
@@ -819,7 +801,7 @@ def post(path, data):
     assert data is None or isinstance(data, dict)
 
     # Open our connection.
-    connection = httplib.HTTPSConnection(__host__)
+    connection = http.client.HTTPSConnection(__host__)
     if __debug_level__ > 0:
         connection.set_debuglevel(__debug_level__)
 
@@ -832,7 +814,7 @@ def post(path, data):
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read()
+    response_content = response.read().decode()
 
     # Close our connection.
     connection.close()
@@ -858,7 +840,7 @@ def delete(path, data=None):
     assert data is None or isinstance(data, dict)
 
     # Open our connection.
-    connection = httplib.HTTPSConnection(__host__)
+    connection = http.client.HTTPSConnection(__host__)
     if __debug_level__ > 0:
         connection.set_debuglevel(__debug_level__)
 
@@ -871,7 +853,7 @@ def delete(path, data=None):
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read()
+    response_content = response.read().decode()
 
     # Close our connection.
     connection.close()
@@ -898,7 +880,7 @@ def put(path, data):
     assert data is None or isinstance(data, dict)
 
     # Open our connection.
-    connection = httplib.HTTPSConnection(__host__)
+    connection = http.client.HTTPSConnection(__host__)
     if __debug_level__ > 0:
         connection.set_debuglevel(__debug_level__)
 
@@ -911,7 +893,7 @@ def put(path, data):
 
     # Extract the result.
     response_status = response.status
-    response_content = response.read()
+    response_content = response.read().decode()
 
     # Close our connection.
     connection.close()
