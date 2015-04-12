@@ -8,28 +8,22 @@ unit tests.
 import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
-import common
 
-def delete_bundle(client, href):
-    """Delete bundle at href."""
+def simple_search():
+    """This function performs no setup, so we don't even check the
+    results.  Just a basic sanity check."""
 
-    print('*** Deleting ' + href)
-    client.delete_bundle(href)
-
-
-def delete_all_bundles(client):
-    """Delete all bundles."""
-
-    common.bundle_list_map(client, delete_bundle)
+    print('*** Searching for "father"...')
+    print(clarify.search(None, 'father'))
 
 
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
-    print('===== delete_all_bundles() =====')
-    delete_all_bundles(client)
+    print('===== simple_search() =====')
+    simple_search()
 
 if __name__ == '__main__':
 

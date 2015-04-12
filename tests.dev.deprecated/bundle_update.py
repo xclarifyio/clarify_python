@@ -11,41 +11,41 @@ from clarify_python import clarify
 import common
 
 
-def update_all_bundle_names(client):
+def update_all_bundle_names():
     """Update and print all the bundle names.
     Will fail if no bundles are available!"""
 
-    common.bundle_list_map(client, update_name)
-    common.bundle_list_map(client, print_name)
+    common.bundle_list_map(update_name)
+    common.bundle_list_map(print_name)
 
 
-def update_name(client, href):
+def update_name(href):
     """Update the name of the bundle at href."""
 
-    bundle = client.get_bundle(href)
+    bundle = clarify.get_bundle(href)
     name = bundle.get('name')
     if name is None:
         name = 'no name updated'
     else:
         name = name + ' updated'
         print('*** Updating name for ' + href)
-    client.update_bundle(href, name)
+    clarify.update_bundle(href, name)
 
 
-def print_name(client, href):
+def print_name(href):
     """Print the name of the bundle at href."""
 
-    bundle = client.get_bundle(href)
+    bundle = clarify.get_bundle(href)
     print('*** ' + href + ' is now named "' + bundle['name'] + '"')
 
 
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== update_all_bundle_names() =====')
-    update_all_bundle_names(client)
+    update_all_bundle_names()
 
 if __name__ == '__main__':
 

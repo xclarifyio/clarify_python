@@ -10,23 +10,23 @@ sys.path.insert(0, '..')
 from clarify_python import clarify
 
 
-def create_15_bundles(client):
+def create_15_bundles():
     """Create 15 bundles without any media."""
 
     for i in range(0, 15):
-        bundle_ref = client.create_bundle(str(i))
+        bundle_ref = clarify.create_bundle(str(i))
         href = bundle_ref['_links']['self']['href']
-        bundle = client.get_bundle(href)
+        bundle = clarify.get_bundle(href)
         print('*** Created bundle ' + href + ' with name: ' + bundle['name'])
 
 
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== create_15_bundles() =====')
-    create_15_bundles(client)
+    create_15_bundles()
 
 if __name__ == '__main__':
 

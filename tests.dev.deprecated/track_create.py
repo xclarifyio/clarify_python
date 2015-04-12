@@ -13,28 +13,28 @@ MEDIA_URL1 = 'http://www.kqed.org/.stream/anon/radio/hd/2008/09/2008-09-18c-hd.m
 MEDIA_URL2 = 'http://feedproxy.google.com/~r/kqed/ClimateWatch/~5/UTaeFBdvZSw/2012-05-04a-tcr.mp3'
 
 
-def track_create_and_list(client):
+def track_create_and_list():
     """Create a bundle with a track, print it, add a track, print them."""
 
     print('*** Creating a bundle with a track...')
 
     # Create a bundle with a track.
-    bundle_ref = client.create_bundle(name='track tester',
-                                      media_url=MEDIA_URL1)
+    bundle_ref = clarify.create_bundle(name='track tester',
+                                       media_url=MEDIA_URL1)
 
     # List the tracks.
     track_list_ref = bundle_ref['_links']['clarify:tracks']['href']
-    track_list = client.get_track_list(track_list_ref)
+    track_list = clarify.get_track_list(track_list_ref)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
     print('*** Adding a track to the bundle...')
 
     # Add a track.
-    client.create_track(track_list_ref, media_url=MEDIA_URL2)
+    clarify.create_track(track_list_ref, media_url=MEDIA_URL2)
 
     # List the tracks.
-    track_list = client.get_track_list(track_list_ref)
+    track_list = clarify.get_track_list(track_list_ref)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
@@ -71,10 +71,10 @@ def print_track_quiet(track):
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== track_create_and_list() =====')
-    track_create_and_list(client)
+    track_create_and_list()
 
 if __name__ == '__main__':
 

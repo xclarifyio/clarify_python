@@ -9,7 +9,7 @@ import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
 
-def metadata_create(client):
+def metadata_create():
     """Create metadata and create a bundle with it."""
 
     # Create a bundle with metadata.
@@ -19,7 +19,7 @@ def metadata_create(client):
     # data = {'wife': 'Medea', 'lovers': ['Aegisthus', 'Pancreon']}
     # data = {'daughters': 1, 'sons': 3}
     # data = {'hot': True, 'cold': False, 'tepid': None}
-    bundle_ref = client.create_bundle(name='md test', metadata=data)
+    bundle_ref = clarify.create_bundle(name='md test', metadata=data)
 
     #
     # 3 different ways to retrieve our metadata!
@@ -28,19 +28,19 @@ def metadata_create(client):
     # (1) Retrieve the metadata from bundle reference.  Print it.
     print('*** Retrieving metadata from bundle reference...')
     href = bundle_ref['_links']['clarify:metadata']['href']
-    metadata = client.get_metadata(href)
+    metadata = clarify.get_metadata(href)
     print_metadata_info_quiet(metadata)
 
     # (2) Retrieve the bundle, then retrieve the metadata.  Print it.
     print('*** Retrieving the bundle then the metadata...')
-    href = client.get_bundle(bundle_ref['_links']['self']['href'])
-    metadata = client.get_metadata(href['_links']['clarify:metadata']['href'])
+    href = clarify.get_bundle(bundle_ref['_links']['self']['href'])
+    metadata = clarify.get_metadata(href['_links']['clarify:metadata']['href'])
     print_metadata_info_quiet(metadata)
 
     # (3) Retrieve the bundle with the metadata embedded.  Print it.
     print('*** Retrieving the bundle with embedded metadata...')
-    href = client.get_bundle(bundle_ref['_links']['self']['href'],
-                             embed_metadata=True)
+    href = clarify.get_bundle(bundle_ref['_links']['self']['href'],
+                              embed_metadata=True)
     metadata = href['_embedded']['clarify:metadata']
     print_metadata_info_quiet(metadata)
 
@@ -65,10 +65,10 @@ def print_metadata_info_quiet(metadata):
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== metadata_create() =====')
-    metadata_create(client)
+    metadata_create()
 
 if __name__ == '__main__':
 

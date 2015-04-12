@@ -10,10 +10,10 @@ sys.path.insert(0, '..')
 from clarify_python import clarify
 import common
 
-def get_first_page_hrefs(client):
+def get_first_page_hrefs():
     """Print first page of bundle hrefs."""
 
-    bundle_list = client.get_bundle_list()
+    bundle_list = clarify.get_bundle_list()
 
     print('*** Available bundles: ' + str(bundle_list['total']))
     print('*** Printing first page of hrefs retrieved (max 10)...')
@@ -21,30 +21,30 @@ def get_first_page_hrefs(client):
         print(i['href'])
 
 
-def get_all_bundle_hrefs(client):
+def get_all_bundle_hrefs():
     """Print all bundle hrefs."""
 
     print('*** Printing all available bundle hrefs...')
-    common.bundle_list_map(client, print_href)
+    common.bundle_list_map(print_href)
 
 
-def get_all_bundles(client):
+def get_all_bundles():
     """Print all bundles."""
 
     print('*** Printing all available bundle...')
-    common.bundle_list_map(client, print_bundle)
+    common.bundle_list_map(print_bundle)
 
 
-def print_href(client, href):
+def print_href(href):
     """Function to print an href."""
 
     print(href)
 
 
-def print_bundle(client, href):
+def print_bundle(href):
     """Function to print an bundle from an href."""
 
-    bundle = client.get_bundle(href)
+    bundle = clarify.get_bundle(href)
     print('* Bundle ' + bundle['id'] + '...')
     if 'name' in bundle:
         print('name: ' + bundle['name'])
@@ -59,14 +59,14 @@ def print_bundle(client, href):
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== get_first_page_hrefs() =====')
-    get_first_page_hrefs(client)
+    get_first_page_hrefs()
     print('===== get_all_bundle_hrefs() =====')
-    get_all_bundle_hrefs(client)
+    get_all_bundle_hrefs()
     print('===== get_all_bundles() =====')
-    get_all_bundles(client)
+    get_all_bundles()
 
 
 if __name__ == '__main__':

@@ -10,26 +10,26 @@ sys.path.insert(0, '..')
 from clarify_python import clarify
 import common
 
-def delete_bundle(client, href):
+def delete_bundle(href):
     """Delete bundle at href."""
 
     print('*** Deleting ' + href)
-    client.delete_bundle(href)
+    clarify.delete_bundle(href)
 
 
-def delete_all_bundles(client):
+def delete_all_bundles():
     """Delete all bundles."""
 
-    common.bundle_list_map(client, delete_bundle)
+    common.bundle_list_map(delete_bundle)
 
 
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== delete_all_bundles() =====')
-    delete_all_bundles(client)
+    delete_all_bundles()
 
 if __name__ == '__main__':
 

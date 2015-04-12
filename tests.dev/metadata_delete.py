@@ -9,28 +9,28 @@ import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
 
-def metadata_delete():
+def metadata_delete(client):
     """Create a bundle with metadata, print it, delete it, print it."""
 
     # Create a bundle with some metadata.
     print('*** Creating a bundle with mythical metadata...')
     data = {'wife': 'Medea', 'husband': 'Jason'}
-    bundle_ref = clarify.create_bundle(name='metadata update test',
-                                       metadata=data)
+    bundle_ref = client.create_bundle(name='metadata update test',
+                                      metadata=data)
 
     # Retrieve the metadata and print it.
     print('*** Retrieving metadata...')
     metadata_href = bundle_ref['_links']['clarify:metadata']['href']
-    metadata = clarify.get_metadata(metadata_href)
+    metadata = client.get_metadata(metadata_href)
     print_metadata_info_quiet(metadata)
 
     # Delete the metadata and print it.
     print('*** Deleting metadata...')
-    clarify.delete_metadata(metadata['_links']['self']['href'])
+    client.delete_metadata(metadata['_links']['self']['href'])
 
     # Retrieve the metadata and print it.
     print('*** Retrieving metadata...')
-    metadata = clarify.get_metadata(metadata_href)
+    metadata = client.get_metadata(metadata_href)
     print_metadata_info_quiet(metadata)
 
 
@@ -54,10 +54,10 @@ def print_metadata_info_quiet(metadata):
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    clarify.set_key(apikey)
+    client = clarify.Client(apikey)
 
     print('===== metadata_delete() =====')
-    metadata_delete()
+    metadata_delete(client)
 
 if __name__ == '__main__':
 

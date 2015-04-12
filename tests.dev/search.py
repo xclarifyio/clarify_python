@@ -9,21 +9,21 @@ import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
 
-def simple_search():
+def simple_search(client):
     """This function performs no setup, so we don't even check the
     results.  Just a basic sanity check."""
 
     print('*** Searching for "father"...')
-    print(clarify.search(None, 'father'))
+    print(client.search(None, 'father'))
 
 
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    clarify.set_key(apikey)
+    client = clarify.Client(apikey)
 
     print('===== simple_search() =====')
-    simple_search()
+    simple_search(client)
 
 if __name__ == '__main__':
 

@@ -14,93 +14,93 @@ MEDIA_URL2 = 'http://feedproxy.google.com/~r/kqed/ClimateWatch/~5/UTaeFBdvZSw/20
 MEDIA_URL3 = 'http://204.45.41.186/33/music/hindi/movies/1995/o/oh_darling_yeh_hai_india/Public-Ko-Hasao_(webmusic.in).mp3'
 
 
-def delete_track_using_index(client):
+def delete_track_using_index():
     """Delete a track using the track index."""
 
     # Create a bundle with no track.
     print('*** Creating a bundle with no tracks...')
-    bundle_ref = client.create_bundle(name='track tester')
+    bundle_ref = clarify.create_bundle(name='track tester')
     href = bundle_ref['_links']['clarify:tracks']['href']
 
     # Add three tracks.
     print('*** Adding a track to the bundle...')
-    client.create_track(href, media_url=MEDIA_URL1, label='first label')
+    clarify.create_track(href, media_url=MEDIA_URL1, label='first label')
     print('*** Adding a track to the bundle...')
-    client.create_track(href, media_url=MEDIA_URL2, label='second label')
+    clarify.create_track(href, media_url=MEDIA_URL2, label='second label')
     print('*** Adding a track to the bundle...')
-    client.create_track(href, media_url=MEDIA_URL3, label='third label')
+    clarify.create_track(href, media_url=MEDIA_URL3, label='third label')
 
     # List the tracks.
-    track_list = client.get_track_list(href)
+    track_list = clarify.get_track_list(href)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
     # Delete the track at index 1.
     print('*** Deleting the second track (index 1)...')
-    client.delete_track_at_index(href, index=1)
+    clarify.delete_track_at_index(href, index=1)
 
     # List the tracks.
-    track_list = client.get_track_list(href)
+    track_list = clarify.get_track_list(href)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
 
-def delete_all_tracks(client):
+def delete_all_tracks():
     """Create a bundle, add tracks, delete them."""
 
     # Create a bundle with no track.
     print('*** Creating a bundle with no tracks...')
-    bundle_ref = client.create_bundle(name='track tester')
+    bundle_ref = clarify.create_bundle(name='track tester')
     href = bundle_ref['_links']['clarify:tracks']['href']
 
     # Add three tracks.
     print('*** Adding a track to the bundle...')
-    client.create_track(href, media_url=MEDIA_URL1, label='first label')
+    clarify.create_track(href, media_url=MEDIA_URL1, label='first label')
     print('*** Adding a track to the bundle...')
-    client.create_track(href, media_url=MEDIA_URL2, label='second label')
+    clarify.create_track(href, media_url=MEDIA_URL2, label='second label')
     print('*** Adding a track to the bundle...')
-    client.create_track(href, media_url=MEDIA_URL3, label='third label')
+    clarify.create_track(href, media_url=MEDIA_URL3, label='third label')
 
     # List the tracks.
-    track_list = client.get_track_list(href)
+    track_list = clarify.get_track_list(href)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
     # Update the track.
     print('*** Deleting all tracks...')
-    client.delete_track_at_index(href)
+    clarify.delete_track_at_index(href)
 
     # List the tracks.
-    track_list = client.get_track_list(href)
+    track_list = clarify.get_track_list(href)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
 
-def delete_track_using_href(client):
+def delete_track_using_href():
     """Delete a track using its href."""
 
     # Create a bundle with no track.
     print('*** Creating a bundle with no tracks...')
-    bundle_ref = client.create_bundle(name='track tester')
+    bundle_ref = clarify.create_bundle(name='track tester')
     href = bundle_ref['_links']['clarify:tracks']['href']
 
     # Add a track.
     print('*** Adding a track to the bundle...')
-    track_ref = client.create_track(href, media_url=MEDIA_URL1,
+    track_ref = clarify.create_track(href, media_url=MEDIA_URL1,
                                      label='short-lived track')
 
     # List the tracks.
-    track_list = client.get_track_list(href)
+    track_list = clarify.get_track_list(href)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
     # Delete the track.
     print('*** Deleting track by href...')
     track_href = track_ref['_links']['self']['href']
-    client.delete_track(track_href)
+    clarify.delete_track(track_href)
 
     # List the tracks.
-    track_list = client.get_track_list(href)
+    track_list = clarify.get_track_list(href)
     for track in track_list['tracks']:
         print_track_quiet(track)
 
@@ -136,14 +136,14 @@ def print_track_quiet(track):
 def all_tests(apikey):
     """Set API key and call all test functions."""
 
-    client = clarify.Client(apikey)
+    clarify.set_key(apikey)
 
     print('===== delete_track_using_index() =====')
-    delete_track_using_index(client)
+    delete_track_using_index()
     print('===== delete_all_tracks() =====')
-    delete_all_tracks(client)
+    delete_all_tracks()
     print('===== delete_track_using_href() =====')
-    delete_track_using_href(client)
+    delete_track_using_href()
 
 if __name__ == '__main__':
 
