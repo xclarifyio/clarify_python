@@ -4,6 +4,8 @@ Clarify Python 3 Helper Library
 
 Python 3.x helper library for the Clarify API
 
+NB: Version 2.x is _not_ compatible with version 1.x.
+
 * Free software: MIT license
 
 Installing
@@ -37,22 +39,22 @@ This quickstart demonstrates a simple way to get started using the Clarify API. 
 Configuring Your Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-While you can use any programming language you choose, we provide helping libraries in a few to get you started.  In Python, you simply include the Clarify file from the python module, and initialize the environment with your API key:
+While you can use any programming language you choose, we provide helping libraries in a few to get you started.  In Python, you simply include the Clarify file from the python module, and initialize a Client object with your API key:
 
 .. code-block:: python
 
 	from clarify_python import clarify
 
-	clarify.set_key('my api key')
+	client = clarify.Client('my_api_key')
 
 Loading Audio
 ^^^^^^^^^^^^^
 
-Once you've initialied the environment with your API key, you load a file like this:
+Once you've initialized a Client object, you load a file like this:
 
 .. code-block:: python
 
-	clarify.create_bundle(name='test bundle', media_url='http://example.com/sample-audio-file.wav')
+	client.create_bundle(name='test bundle', media_url='http://example.com/sample-audio-file.wav')
 
 Naming the bundle is optional.  
 
@@ -73,19 +75,19 @@ To search, we'll use the search() function. If you uploaded the *Wizard of Oz* a
 
 .. code-block:: python
 
-	clarify.search(query='dorothy')
+	client.search(query='dorothy')
 
 Then you can process and interact the results however you wish. The code below simply shows the resulting bundle id, bundle name, and the start/end offsets for each occurrence of the search terms. This assumes that the audio clip has been indexed by the time you search. If it hasn't, wait and try again in a few minutes.
 
 .. code-block:: python
 
-	result = clarify.search(query='dorothy')
+	result = client.search(query='dorothy')
 	results = result['item_results']
 	items = result['_links']['items']
 
 	index = 0
 	for item in items:
-	    bundle = clarify.get_bundle(item['href'])
+	    bundle = client.get_bundle(item['href'])
 
 	    print bundle['name']
 
@@ -116,14 +118,14 @@ From here, we can visualize our search results with the included audio player.  
 
 	import json
 
-	result = clarify.search(query='dorothy')
+	result = client.search(query='dorothy')
 	search_terms = json.dumps(result['search_terms'])
 	item_results = json.dumps(result['item_results'])
 
 	bundleref = result['_links']['items'][0]['href']
-	bundle = clarify.get_bundle(bundleref)
+	bundle = client.get_bundle(bundleref)
 	tracksref = bundle['_links']['clarify:tracks']['href']
-	tracks = clarify.get_track_list(tracksref)['tracks']
+	tracks = client.get_track_list(tracksref)['tracks']
 	mediaURL = tracks[0]['media_url']
 
 
