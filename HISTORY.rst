@@ -3,11 +3,10 @@
 History
 -------
 
-2.0.0 (2015-04-12)
+1.1.1 (2015-04-18)
 ++++++++++++++++++
 
 * Deprecated use of set_key() in favor of Client class.
-* Otherwise functionally equivalent to 1.1.0.
 
 1.1.0 (2015-03-08)
 ++++++++++++++++++
