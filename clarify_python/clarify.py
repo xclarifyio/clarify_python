@@ -76,15 +76,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(j)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, j, msg)
-
-        return result
+        return self._parse_json(j)
 
 
     def _get_first_bundle_list(self, limit=None,
@@ -224,15 +216,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def delete_bundle(self, href=None):
@@ -290,23 +274,9 @@ class Client(object):
             raise APIException(raw_result.status, raw_result.json)
 
         # Convert the JSON to a python data struct.
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
 
-        return result
-
-        #
-        # Functions to set the API key and perform basic HTTP operations.
-        #
-
-        # This named tuple is returned by get(), put(), post(), delete()
-        # functions and consumed by the REST cover functions.
-        Result = collections.namedtuple('Result', ['status', 'json'])
-
-
+        return self._parse_json(raw_result.json)
+        
     def update_bundle(self, href=None, name=None,
                       notify_url=None, version=None):
         """Update a bundle.  Note that only the 'name' and 'notify_url' can
@@ -351,15 +321,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def get_metadata(self, href=None):
@@ -384,15 +346,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def update_metadata(self, href=None, metadata=None, version=None):
@@ -435,15 +389,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def delete_metadata(self, href=None):
@@ -508,15 +454,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def get_track_list(self, href=None):
@@ -541,15 +479,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def get_track(self, href=None):
@@ -574,15 +504,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(raw_result.json)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, raw_result.json, msg)
-
-        return result
+        return self._parse_json(raw_result.json)
 
 
     def delete_track_at_index(self, href=None, index=None):
@@ -677,15 +599,7 @@ class Client(object):
 
         # Convert the JSON to a python data struct.
 
-        result = None
-
-        try:
-            result = json.loads(j)
-        except (ValueError) as exception:
-            msg = 'Unable to convert JSON string to python data structure.'
-            raise APIDataException(exception, j, msg)
-
-        return result
+        return self._parse_json(j)
 
 
     def _search_p1(self, query=None, query_fields=None, query_filter=None,
@@ -897,6 +811,35 @@ class Client(object):
 
         return Result(status=response_status, json=response_content)
 
+    ### Utility functions.
+
+    def _parse_json(self, jstring=None):
+        """Parse jstring and return a Python data structure.
+
+        'jstring' a string of JSON. May not be None.
+
+        Returns a Python data structure.
+
+        If jstring couldn't be parsed, raises an APIDataException."""
+
+        # Argument error checking.
+        assert jstring is not None
+
+        result = None
+
+        try:
+            result = json.loads(jstring)
+        except (ValueError) as exception:
+            msg = 'Unable to convert JSON string to Python data structure.'
+            raise APIDataException(exception, jstring, msg)
+
+        return result
+
+
+# This named tuple is returned by get(), put(), post(), delete()
+# functions and consumed by the REST cover functions.
+
+Result = collections.namedtuple('Result', ['status', 'json'])
 
 #
 # Exceptions.
@@ -1796,10 +1739,6 @@ def _search_pn(href=None, limit=None,
 #
 # Functions to set the API key and perform basic HTTP operations.
 #
-
-# This named tuple is returned by get(), put(), post(), delete()
-# functions and consumed by the REST cover functions.
-Result = collections.namedtuple('Result', ['status', 'json'])
 
 def set_key(key):
     print("This function is deprecated. Please use the Client class.")
