@@ -8,7 +8,7 @@ unit tests.
 import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
-import common
+
 
 def get_first_page_hrefs(client):
     """Print first page of bundle hrefs."""
@@ -25,14 +25,14 @@ def get_all_bundle_hrefs(client):
     """Print all bundle hrefs."""
 
     print('*** Printing all available bundle hrefs...')
-    common.bundle_list_map(client, print_href)
+    client.bundle_list_map(print_href)
 
 
 def get_all_bundles(client):
     """Print all bundles."""
 
     print('*** Printing all available bundle...')
-    common.bundle_list_map(client, print_bundle)
+    client.bundle_list_map(print_bundle)
 
 
 def print_href(client, href):

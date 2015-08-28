@@ -8,15 +8,14 @@ unit tests.
 import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
-import common
 
 
 def update_all_bundle_names(client):
     """Update and print all the bundle names.
     Will fail if no bundles are available!"""
 
-    common.bundle_list_map(client, update_name)
-    common.bundle_list_map(client, print_name)
+    client.bundle_list_map(update_name)
+    client.bundle_list_map(print_name)
 
 
 def update_name(client, href):

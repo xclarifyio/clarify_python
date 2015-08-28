@@ -8,7 +8,6 @@ unit tests.
 import sys
 sys.path.insert(0, '..')
 from clarify_python import clarify
-import common
 
 def delete_bundle(client, href):
     """Delete bundle at href."""
@@ -20,7 +19,7 @@ def delete_bundle(client, href):
 def delete_all_bundles(client):
     """Delete all bundles."""
 
-    common.bundle_list_map(client, delete_bundle)
+    client.bundle_list_map(delete_bundle)
 
 
 def all_tests(apikey):

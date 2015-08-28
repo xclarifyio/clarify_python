@@ -171,7 +171,24 @@ class Client(object):
 
         return result
 
-        
+    def bundle_list_map(self, func):
+        """Execute func on every bundle. Func will be called with the bundle href."""
+        has_next = True
+        next_href = None  # if None, retrieves first page
+
+        while has_next:
+            # Get a page and perform the requested function.
+            bundle_list = self.get_bundle_list(next_href)
+            for i in bundle_list['_links']['items']:
+                href = i['href']
+                func(href)
+            # Check for following page.
+            next_href = None
+            if 'next' in bundle_list['_links']:
+                next_href = bundle_list['_links']['next']['href']
+            if next_href is None:
+                has_next = False
+
     def create_bundle(self, name=None, media_url=None,
                       audio_channel=None, metadata=None, notify_url=None):
         """Create a new bundle.
