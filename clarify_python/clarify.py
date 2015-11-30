@@ -179,7 +179,7 @@ class Client(object):
             bundle_list = self.get_bundle_list(next_href)
             for i in bundle_list['_links']['items']:
                 href = i['href']
-                func(href)
+                func(self, href)
             # Check for following page.
             next_href = None
             if 'next' in bundle_list['_links']:
@@ -599,22 +599,25 @@ class Client(object):
     def search(self, href=None,
                query=None, query_fields=None, query_filter=None,
                limit=None, embed_items=None, embed_tracks=None,
-               embed_metadata=None):
+               embed_metadata=None, language=None):
 
         """Search a media collection.
 
         'href' the relative href to the bundle list to retriev. If None,
-        the first bundle list will be returned.
-        'query' See API docs for full description. May not be None.
+               the first bundle list will be returned.
+        'query' See API docs for full description. May not be None if
+                href is None.
         'query_fields' See API docs for full description. May be None.
+                       Ignored if href is not None.
         'query_filter' See API docs for full description. May be None.
+                       Ignored if href is not None.
         'limit' the maximum number of bundles to include in the result.
         'embed_items' whether or not to expand the bundle data into the
-        result.
+                      result.
         'embed_tracks' whether or not to expand the bundle track data
-        into the result.
+                       into the result.
         'embed_metadata' whether or not to expand the bundle metadata
-        into the result.
+                         into the result.
 
         NB: providing values for 'limit', 'embed_*' will override either
         the API default or the values in the provided href.
@@ -632,7 +635,8 @@ class Client(object):
 
         if href is None:
             j = self._search_p1(query, query_fields, query_filter, limit,
-                                embed_items, embed_tracks, embed_metadata)
+                                embed_items, embed_tracks, embed_metadata,
+                                language)
 
         else:
             j = self._search_pn(href, limit, embed_items, embed_tracks,
@@ -651,7 +655,7 @@ class Client(object):
 
     def _search_p1(self, query=None, query_fields=None, query_filter=None,
                    limit=None, embed_items=None, embed_tracks=None,
-                   embed_metadata=None):
+                   embed_metadata=None, language=None):
         """Function called to retrieve the first page."""
 
         # Prepare the data we're going to include in our query.
