@@ -350,18 +350,7 @@ class Client(object):
         If the response status is not 2xx, throws an APIException.
         If the JSON to python data struct conversion fails, throws an
         APIDataException."""
-
-        # Argument error checking.
-        assert href is not None
-
-        raw_result = self.get(href)
-
-        if raw_result.status < 200 or raw_result.status > 202:
-            raise APIException(raw_result.status, raw_result.json)
-
-        # Convert the JSON to a python data struct.
-
-        return self._parse_json(raw_result.json)
+        return self._get_simple_model(href)
 
 
     def update_metadata(self, href=None, metadata=None, version=None):
@@ -483,18 +472,7 @@ class Client(object):
         If the response status is not 2xx, throws an APIException.
         If the JSON to python data struct conversion fails, throws an
         APIDataException."""
-
-        # Argument error checking.
-        assert href is not None
-
-        raw_result = self.get(href)
-
-        if raw_result.status < 200 or raw_result.status > 202:
-            raise APIException(raw_result.status, raw_result.json)
-
-        # Convert the JSON to a python data struct.
-
-        return self._parse_json(raw_result.json)
+        return self._get_simple_model(href)
 
 
     def get_track(self, href=None):
@@ -510,16 +488,7 @@ class Client(object):
         APIDataException."""
 
         # Argument error checking.
-        assert href is not None
-
-        raw_result = self.get(href)
-
-        if raw_result.status < 200 or raw_result.status > 202:
-            raise APIException(raw_result.status, raw_result.json)
-
-        # Convert the JSON to a python data struct.
-
-        return self._parse_json(raw_result.json)
+        return self._get_simple_model(href)
 
 
     def delete_track_at_index(self, href=None, index=None):
@@ -568,6 +537,63 @@ class Client(object):
 
         if raw_result.status != 204:
             raise APIException(raw_result.status, raw_result.json)
+
+
+    def get_insights(self, href=None):
+        """Get the insights for a bundle. The result json contains
+        links to the individual insight results which can be
+        fetched with get_insight().
+
+        'href' the relative href to the insights. May not be None.
+
+        Returns a data structure equivalent to the JSON returned by the
+        API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+        return self._get_simple_model(href)
+
+
+    def get_insight(self, href=None):
+        """Get an insight for a bundle
+
+        'href' the relative href to the insight. The href must be one
+        of the "insight" link relations in the insights model of a
+        bundle. May not be None.
+
+        Returns a data structure equivalent to the JSON returned by the
+        API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+        return self._get_simple_model(href)
+
+
+    def _get_simple_model(self, href=None):
+        """Get a model
+
+        'href' the relative href to the model. May not be None.
+
+        Returns a data structure equivalent to the JSON returned by the
+        API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+
+        # Argument error checking.
+        assert href is not None
+
+        raw_result = self.get(href)
+
+        if raw_result.status < 200 or raw_result.status > 202:
+            raise APIException(raw_result.status, raw_result.json)
+
+        # Convert the JSON to a python data struct.
+
+        return self._parse_json(raw_result.json)
 
 
     def search(self, href=None,
