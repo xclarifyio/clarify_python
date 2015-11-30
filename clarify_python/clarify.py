@@ -26,14 +26,12 @@ PYTHON_VERSION = '.'.join(str(i) for i in sys.version_info[:3])
 class Client(object):
     """Holds the environment."""
 
-    key = None # Our API key.
-    conn = None # Or connection pool.
-
     def __init__(self, key):
         self.key = key
         self.conn = urllib3.HTTPSConnectionPool(__host__, maxsize=1,
                                                 cert_reqs='CERT_REQUIRED',
                                                 ca_certs=certifi.where())
+        self._last_status = None
 
 
     def get_bundle_list(self, href=None, limit=None, embed_items=None,
@@ -196,10 +194,10 @@ class Client(object):
         'metadata' may be None, or an object that can be converted to a JSON
         string.  See API documentation for restrictions.  The conversion
         will take place before the API call.
-        
+
         All other parameters are also optional. For information about these
         see https://api.clarify.io/docs#!/audio/v1audio_post_1.
-        
+
         Returns a data structure equivalent to the JSON returned by the API.
 
         If the response status is not 2xx, throws an APIException.
@@ -293,7 +291,7 @@ class Client(object):
         # Convert the JSON to a python data struct.
 
         return self._parse_json(raw_result.json)
-        
+
     def update_bundle(self, href=None, name=None,
                       notify_url=None, version=None):
         """Update a bundle.  Note that only the 'name' and 'notify_url' can
@@ -609,7 +607,7 @@ class Client(object):
         if href is None:
             j = self._search_p1(query, query_fields, query_filter, limit,
                                 embed_items, embed_tracks, embed_metadata)
-                           
+
         else:
             j = self._search_pn(href, limit, embed_items, embed_tracks,
                                 embed_metadata)
@@ -617,6 +615,12 @@ class Client(object):
         # Convert the JSON to a python data struct.
 
         return self._parse_json(j)
+
+
+    def get_last_status(self):
+        """Returns the HTTP status code of the most recent request made
+        by the client."""
+        return self._last_status
 
 
     def _search_p1(self, query=None, query_fields=None, query_filter=None,
@@ -702,11 +706,13 @@ class Client(object):
         development efforts."""
 
         user_agent = __api_lib_name__ + '/' + __version__ + '/' + \
-                     PYTHON_VERSION 
+                     PYTHON_VERSION
 
-        return {'Authorization': 'Bearer ' + self.key,
-                'User-Agent': user_agent,
-                'Content-Type': 'application/x-www-form-urlencoded'}
+        headers = {'User-Agent': user_agent,
+                   'Content-Type': 'application/x-www-form-urlencoded'}
+        if self.key:
+            headers['Authorization'] = 'Bearer ' + self.key
+        return headers
 
 
     def get(self, path, data=None):
@@ -731,7 +737,7 @@ class Client(object):
         response = self.conn.request('GET', path, data, self._get_headers())
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         return Result(status=response_status, json=response_content)
@@ -762,7 +768,7 @@ class Client(object):
                                                  self._get_headers(), False)
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         return Result(status=response_status, json=response_content)
@@ -791,7 +797,7 @@ class Client(object):
                                      self._get_headers())
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         # return (status, json)
@@ -804,7 +810,7 @@ class Client(object):
         'path' may not be None. Should include the full path to the
         resoure.
         'data' may be None or a dictionary.
-        
+
         Returns a named tuple that includes:
 
         status: the HTTP status code
@@ -823,7 +829,7 @@ class Client(object):
                                                  self._get_headers(), False)
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         return Result(status=response_status, json=response_content)
