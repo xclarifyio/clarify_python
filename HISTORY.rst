@@ -3,6 +3,13 @@
 History
 -------
 
+3.0.0 (2015-12-01)
+++++++++++++++++++
+
+* BREAKING CHANGE: client.bundle_list_map(func) The func is now called
+with client as the first parameter.
+* Added behave tests.
+
 2.0.0 (2015-04-18)
 ++++++++++++++++++
 
