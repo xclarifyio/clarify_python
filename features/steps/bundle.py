@@ -3,30 +3,6 @@ import time
 from clarify_python.helper import get_link_href, get_embedded
 
 
-def bundle_list_map(client, bundle_list, func):
-    has_next = True
-    next_href = None  # if None, retrieves first page
-    stopped = False
-
-    while has_next and not stopped:
-        # Get a page and perform the requested function.
-        if bundle_list is None:
-            bundle_list = client.get_bundle_list(next_href)
-        for i in bundle_list['_links']['items']:
-            href = i['href']
-            if func(href) is False:
-                stopped = True
-                break
-        # Check for following page.
-        if not stopped:
-            next_href = None
-            if 'next' in bundle_list['_links']:
-                next_href = bundle_list['_links']['next']['href']
-                bundle_list = None
-            if next_href is None:
-                has_next = False
-
-
 @when('I request a list of bundles without authentication')
 def step_impl(context):
     try:
@@ -55,15 +31,15 @@ def step_impl(context, name):
     found = False
     bundle_name = context.names.translate(name)
 
-    def check_bundle_name(bundle_href):
-        nonlocal found, bundle_name, context
+    def check_bundle_name(client, bundle_href):
+        nonlocal found, bundle_name
 
-        bundle = context.customer.client().get_bundle(bundle_href)
+        bundle = client.get_bundle(bundle_href)
         if bundle['name'] == bundle_name:
             found = True
             return False
 
-    bundle_list_map(context.customer.client(), context.result, check_bundle_name)
+    context.customer.client().bundle_list_map(check_bundle_name, context.result)
     assert found
 
 
@@ -97,17 +73,17 @@ def step_impl(context, url):
     found = False
     url = context.url_table.resolve(url)
 
-    def check_bundle_track(bundle_href):
-        nonlocal found, url, context
+    def check_bundle_track(client, bundle_href):
+        nonlocal found, url
 
-        bundle = context.customer.client().get_bundle(bundle_href, embed_tracks=True)
+        bundle = client.get_bundle(bundle_href, embed_tracks=True)
         tracks = get_embedded(bundle, 'clarify:tracks')
         for track in tracks['tracks']:
             if track['media_url'] == url:
                 found = True
                 return False
 
-    bundle_list_map(context.customer.client(), context.result, check_bundle_track)
+    context.customer.client().bundle_list_map(check_bundle_track, context.result)
     assert found
 
 
