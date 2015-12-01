@@ -169,23 +169,38 @@ class Client(object):
 
         return result
 
-    def bundle_list_map(self, func):
-        """Execute func on every bundle. Func will be called with the bundle href."""
+
+    def bundle_list_map(self, func, bundle_collection=None):
+        """
+        Execute func on every bundle in a collection.
+        Func will be called as func(client, bundle_href).
+        If bundle_collection is None, all bundles will be iterated.
+        Otherwise, bundle_collection can be the model returned from
+        a call to get_bundle_list() or search().
+        If func returns False, the iteration is stopped.
+        """
         has_next = True
         next_href = None  # if None, retrieves first page
+        stopped = False
 
-        while has_next:
+        while has_next and not stopped:
             # Get a page and perform the requested function.
-            bundle_list = self.get_bundle_list(next_href)
-            for i in bundle_list['_links']['items']:
+            if bundle_collection is None:
+                bundle_collection = self.get_bundle_list(next_href)
+            for i in bundle_collection['_links']['items']:
                 href = i['href']
-                func(self, href)
+                if func(self, href) is False:
+                    stopped = True
+                    break
             # Check for following page.
-            next_href = None
-            if 'next' in bundle_list['_links']:
-                next_href = bundle_list['_links']['next']['href']
-            if next_href is None:
-                has_next = False
+            if not stopped:
+                next_href = None
+                if 'next' in bundle_collection['_links']:
+                    next_href = bundle_collection['_links']['next']['href']
+                    bundle_collection = None
+                if next_href is None:
+                    has_next = False
+
 
     def create_bundle(self, name=None, media_url=None,
                       audio_channel=None, metadata=None, notify_url=None):
