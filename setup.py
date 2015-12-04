@@ -32,8 +32,8 @@ setup(
                  'clarify_python'},
     include_package_data=True,
     install_requires=[
-         'urllib3',
-         'certifi'
+        'urllib3',
+        'certifi'
     ],
     license="MIT",
     zip_safe=False,
@@ -46,6 +46,7 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     tests_require=[
+        'httpretty',
         'behave>=1.2.5'
     ],
     test_suite='tests',

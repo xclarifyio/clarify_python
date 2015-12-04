@@ -1,0 +1,120 @@
+{
+  "id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "version": 1,
+  "name": "Dorothy and Wizard of Oz Chapter 1",
+  "created": "2015-09-04T21:27:29.738Z",
+  "updated": "2015-09-04T21:27:29.738Z",
+  "_class": "Bundle",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    },
+    "curies": [
+      {
+        "href": "/docs/rels/{rel}",
+        "name": "clarify",
+        "templated": true
+      }
+    ],
+    "clarify:metadata": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/metadata"
+    },
+    "clarify:tracks": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/tracks"
+    },
+    "clarify:insights": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights"
+    }
+  },
+  "_embedded": {
+    "clarify:tracks": {
+      "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+      "version": 1,
+      "status": "ready",
+      "created": "2015-09-04T21:27:29.742Z",
+      "updated": "2015-11-25T03:09:15.994Z",
+      "tracks": [
+        {
+          "id": "e148aa90a44642a0b87a2494a13c0c21",
+          "track": 0,
+          "label": "",
+          "media_url": "http://media.clarify.io/audio/books/dorothyandthewizardinoz_01_baum_64kb.mp3",
+          "audio_channel": "",
+          "audio_language": "",
+          "created": "2015-09-04T21:27:29.742Z",
+          "updated": "2015-11-25T03:09:15.994Z",
+          "status": "ready",
+          "mime_type": "audio/mpeg",
+          "media_size": 4296443,
+          "duration": 536.92,
+          "fetch_response_code": 200,
+          "fetch_response_message": "",
+          "media_code": 1000,
+          "media_message": "OK"
+        }
+      ],
+      "_class": "Tracks",
+      "_links": {
+        "self": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/tracks"
+        },
+        "parent": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+        },
+        "items": [
+          {
+            "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/tracks/e148aa90a44642a0b87a2494a13c0c21"
+          }
+        ]
+      }
+    },
+    "clarify:metadata": {
+      "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+      "version": 1,
+      "created": "2015-09-04T21:27:29.744Z",
+      "updated": "2015-09-04T21:27:29.744Z",
+      "data": {
+          "name": "Dorothy and Wizard of Oz Chapter 1"
+      },
+      "_class": "Metadata",
+      "_links": {
+        "self": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/metadata"
+        },
+        "parent": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+        }
+      }
+    },
+    "clarify:insights": {
+      "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+      "created": "2015-09-04T21:27:29.745Z",
+      "updated": "2015-09-04T21:39:44.625Z",
+      "_class": "Insights",
+      "_links": {
+        "self": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights"
+        },
+        "parent": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+        },
+        "insight:classification": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/83a371ddf8f34321a3b167d65ad44dfb"
+        },
+        "insight:spoken_words": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/c4008457cd2845afba9a2b0897275fce"
+        },
+        "insight:spoken_keywords": {
+          "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/186d0ec9a9854e8f8606b918eb5f4522"
+        },
+        "curies": [
+          {
+            "href": "/docs/insights/{rel}",
+            "name": "insight",
+            "templated": true
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "created": "2015-09-04T21:27:29.745Z",
+  "updated": "2015-09-04T21:39:44.625Z",
+  "_class": "Insights",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights"
+    },
+    "parent": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    },
+    "insight:classification": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/83a371ddf8f34321a3b167d65ad44dfb"
+    },
+    "insight:spoken_words": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/c4008457cd2845afba9a2b0897275fce"
+    },
+    "insight:spoken_keywords": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/186d0ec9a9854e8f8606b918eb5f4522"
+    },
+    "curies": [
+      {
+        "href": "/docs/insights/{rel}",
+        "name": "insight",
+        "templated": true
+      }
+    ]
+  }
+}
