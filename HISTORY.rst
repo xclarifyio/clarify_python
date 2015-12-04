@@ -8,7 +8,9 @@ History
 
 * BREAKING CHANGE: client.bundle_list_map(func) The func is now called
 with client as the first parameter.
+* Added insight access methods.
 * Added behave tests.
+* Added unittests.
 
 2.0.0 (2015-04-18)
 ++++++++++++++++++
