@@ -1,5 +1,6 @@
 import unittest
 import httpretty
+from urllib.parse import parse_qs
 from clarify_python.clarify import Client
 from clarify_python.helper import get_embedded, get_link_href
 from . import register_uris
@@ -17,8 +18,10 @@ class TestClient(unittest.TestCase):
     @httpretty.activate
     def test_create_bundle(self):
         register_uris(httpretty)
-        bundle = self.client.create_bundle(name="test")
+        bundle = self.client.create_bundle(name="test", external_id="123")
         self.assertIsNotNone(bundle)
+        self.assertEqual(parse_qs(httpretty.last_request().body.decode('utf-8')),
+                         {'name': ['test'], 'external_id': ['123']})
 
     @httpretty.activate
     def test_list_bundles(self):
@@ -41,6 +44,11 @@ class TestClient(unittest.TestCase):
         result = self.client.get_bundle(href, embed_tracks=True,
                                         embed_metadata=True, embed_insights=True)
         self.assertIsNotNone(result)
+        print(httpretty.last_request())
+        self.assertEqual(httpretty.last_request().querystring, {
+            "embed": ['tracks,metadata,insights']
+        })
+
         self.assertEqual(get_link_href(result, 'self'), href)
         tracks = get_embedded(result, 'clarify:tracks')
         self.assertIsNotNone(tracks['tracks'][0]['media_url'])

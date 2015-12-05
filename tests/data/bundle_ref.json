@@ -1,0 +1,26 @@
+{
+  "id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "_class": "Ref",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    },
+    "curies": [
+      {
+        "href": "/docs/rels/{rel}",
+        "name": "clarify",
+        "templated": true
+      }
+    ],
+    "clarify:metadata": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/metadata"
+    },
+    "clarify:tracks": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/tracks"
+    },
+    "clarify:insights": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights"
+    }
+  }
+}
+

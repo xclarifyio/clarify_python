@@ -14,7 +14,7 @@ def load_body(filename):
 def register_uris(httpretty):
 
     httpretty.register_uri('POST', host + '/v1/bundles',
-                           body=load_body('bundle.json'), status=201,
+                           body=load_body('bundle_ref.json'), status=201,
                            content_type='application/json')
 
     httpretty.register_uri('GET', host + '/v1/bundles',

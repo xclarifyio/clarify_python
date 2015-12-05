@@ -213,7 +213,8 @@ class Client(object):
 
 
     def create_bundle(self, name=None, media_url=None,
-                      audio_channel=None, metadata=None, notify_url=None):
+                      audio_channel=None, metadata=None, notify_url=None,
+                      external_id=None):
         """Create a new bundle.
 
         'metadata' may be None, or an object that can be converted to a JSON
@@ -245,6 +246,8 @@ class Client(object):
             fields['metadata'] = json.dumps(metadata)
         if notify_url is not None:
             fields['notify_url'] = notify_url
+        if external_id is not None:
+            fields['external_id'] = external_id
 
         if len(fields) > 0:
             data = fields
@@ -321,7 +324,8 @@ class Client(object):
         return self._parse_json(raw_result.json)
 
     def update_bundle(self, href=None, name=None,
-                      notify_url=None, version=None):
+                      notify_url=None, version=None,
+                      external_id=None):
         """Update a bundle.  Note that only the 'name' and 'notify_url' can
         be update.
 
@@ -332,6 +336,8 @@ class Client(object):
         an integer, and the version must match the version of the
         bundle.  If not, a 409 conflict error will cause an APIException
         to be thrown.
+        'external_id' an arbitrary id (string) you can associate with this bundle.
+                      May be None.
 
         Returns a data structure equivalent to the JSON returned by the API.
 
@@ -353,6 +359,8 @@ class Client(object):
             fields['notify_url'] = notify_url
         if version is not None:
             fields['version'] = version
+        if external_id is not None:
+            fields['external_id'] = external_id
 
         if len(fields) > 0:
             data = fields
