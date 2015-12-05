@@ -1,0 +1,31 @@
+{
+  "id": "83a371ddf8f34321a3b167d65ad44dfb",
+  "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "name": "transcript_r9",
+  "status": "pending",
+  "created": "2015-12-04T21:27:30.675Z",
+  "updated": "2015-12-04T21:27:30.675Z",
+  "track_data": [
+    {
+    }
+  ],
+  "_class": "TranscriptR9Insight",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/83a371ddf8f34321a3b167d65ad44dfb"
+    },
+    "curies": [
+      {
+        "href": "/docs/rels/{rel}",
+        "name": "clarify",
+        "templated": true
+      }
+    ],
+    "parent": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights"
+    },
+    "clarify:bundle": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    }
+  }
+}

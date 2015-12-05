@@ -44,3 +44,7 @@ def register_uris(httpretty):
     httpretty.register_uri('GET', re.compile(host + '/v1/bundles/(\w+)/insights/(\w+)$'),
                            body=load_body('insight_classification.json'), status=200,
                            content_type='application/json')
+
+    httpretty.register_uri('POST', re.compile(host + '/v1/bundles/(\w+)/insights$'),
+                           body=load_body('insight_pending.json'), status=202,
+                           content_type='application/json')

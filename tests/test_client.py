@@ -44,7 +44,6 @@ class TestClient(unittest.TestCase):
         result = self.client.get_bundle(href, embed_tracks=True,
                                         embed_metadata=True, embed_insights=True)
         self.assertIsNotNone(result)
-        print(httpretty.last_request())
         self.assertEqual(httpretty.last_request().querystring, {
             "embed": ['tracks,metadata,insights']
         })
@@ -101,3 +100,15 @@ class TestClient(unittest.TestCase):
         result = self.client.get_insight(insight_href)
         self.assertIsNotNone(result)
         self.assertEqual(get_link_href(result, 'self'), insight_href)
+
+    @httpretty.activate
+    def test_request_insight(self):
+        register_uris(httpretty)
+        href = "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+        result = self.client.get_bundle(href)
+        insights_href = get_link_href(result, 'clarify:insights')
+        result = self.client.request_insight(insights_href, 'transcript_r9')
+        self.assertIsNotNone(result)
+        self.assertEqual(parse_qs(httpretty.last_request().body.decode('utf-8')),
+                         {'insight': ['transcript_r9']})
+        self.assertEqual(get_link_href(result, 'clarify:bundle'), href)

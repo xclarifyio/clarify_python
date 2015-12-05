@@ -9,6 +9,7 @@ History
 * BREAKING CHANGE: client.bundle_list_map(func) The func is now called
 with client as the first parameter.
 * Added insight access methods.
+* Support for requesting non-autorun insights (ex. transcripts and captions)
 * Support for embedding insights when requesting bundles.
 * Support for external_id when creating or updating bundles.
 * Added behave tests.

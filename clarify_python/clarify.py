@@ -591,7 +591,7 @@ class Client(object):
         return self._get_simple_model(href)
 
 
-    def get_insight(self, href=None):
+    def get_insight(self, href):
         """Get an insight for a bundle
 
         'href' the relative href to the insight. The href must be one
@@ -605,6 +605,42 @@ class Client(object):
         If the JSON to python data struct conversion fails, throws an
         APIDataException."""
         return self._get_simple_model(href)
+
+
+    def request_insight(self, href, insight):
+        """Requests an insight to be run.
+
+        Normally insights are set to automatically run so you will NOT need
+        to call this method -- use get_insight() instead.
+        However, non-autorun insights can be requested using this method (for
+        example high-accuracy transcripts or closed captions). If the insight
+        has already been run on this bundle, the existing results are returned.
+
+        'href' Is the uri to a bundles insights. May not be None. Typically
+        you will get this from the 'clarify:insights' link relation of a bundle.
+
+        'insight' is the name of the insight you are requesting.
+
+        Returns a data structure equivalent to the JSON returned by the API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+
+        assert href is not None
+        assert insight is not None
+
+        fields = {
+            'insight': insight
+        }
+
+        raw_result = self.post(href, fields)
+
+        if raw_result.status < 200 or raw_result.status > 202:
+            raise APIException(raw_result.status, raw_result.json)
+
+        # Convert the JSON to a python data struct.
+        return self._parse_json(raw_result.json)
 
 
     def _get_simple_model(self, href=None):
