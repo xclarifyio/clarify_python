@@ -38,12 +38,19 @@ class TestClient(unittest.TestCase):
     def test_get_bundle_embedded(self):
         register_uris(httpretty)
         href = "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
-        result = self.client.get_bundle(href, embed_tracks=True, embed_metadata=True)
+        result = self.client.get_bundle(href, embed_tracks=True,
+                                        embed_metadata=True, embed_insights=True)
         self.assertIsNotNone(result)
         self.assertEqual(get_link_href(result, 'self'), href)
         tracks = get_embedded(result, 'clarify:tracks')
         self.assertIsNotNone(tracks['tracks'][0]['media_url'])
         self.assertEqual(get_link_href(tracks, 'parent'), href)
+        metadata = get_embedded(result, 'clarify:metadata')
+        self.assertEqual(get_link_href(metadata, 'parent'), href)
+        self.assertEqual(get_link_href(metadata, 'self'), get_link_href(result, 'clarify:metadata'))
+        insights = get_embedded(result, 'clarify:insights')
+        self.assertEqual(get_link_href(insights, 'parent'), href)
+        self.assertEqual(get_link_href(insights, 'self'), get_link_href(result, 'clarify:insights'))
 
     @httpretty.activate
     def test_get_tracks(self):

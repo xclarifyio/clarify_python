@@ -35,7 +35,8 @@ class Client(object):
 
 
     def get_bundle_list(self, href=None, limit=None, embed_items=None,
-                        embed_tracks=None, embed_metadata=None):
+                        embed_tracks=None, embed_metadata=None,
+                        embed_insights=None):
         """Get a list of available bundles.
 
         'href' the relative href to the bundle list to retriev. If None,
@@ -46,6 +47,8 @@ class Client(object):
         'embed_tracks' whether or not to expand the bundle track data
         into the result.
         'embed_metadata' whether or not to expand the bundle metadata
+        into the result.
+        'embed_insights' whether or not to expand the bundle insights
         into the result.
 
         NB: providing values for 'limit', 'embed_*' will override either
@@ -65,12 +68,14 @@ class Client(object):
             j = self._get_first_bundle_list(limit,
                                             embed_items,
                                             embed_tracks,
-                                            embed_metadata)
+                                            embed_metadata,
+                                            embed_insights)
         else:
             j = self._get_additional_bundle_list(href, limit,
                                                  embed_items,
                                                  embed_tracks,
-                                                 embed_metadata)
+                                                 embed_metadata,
+                                                 embed_insights)
 
         # Convert the JSON to a python data struct.
 
@@ -80,14 +85,16 @@ class Client(object):
     def _get_first_bundle_list(self, limit=None,
                                embed_items=None,
                                embed_tracks=None,
-                               embed_metadata=None):
+                               embed_metadata=None,
+                               embed_insights=None):
         """Get a list of available bundles.
 
         'limit' may be None, which implies API default.  If not None,
         must be > 1.
         'embed_items' True will embed item data in the result.
-        'embed_tracks' True will embed track data in the embeded items.
-        'embed_metadata' True will embed metadata in the embeded items.
+        'embed_tracks' True will embed track data in the embedded items.
+        'embed_metadata' True will embed metadata in the embedded items.
+        'embed_insights' True will embed insights in the embedded items.
 
         Note that including tracks and metadata without including items
         is meaningless.
@@ -105,7 +112,8 @@ class Client(object):
             fields['limit'] = limit
         embed = helper.process_embed(embed_items=embed_items,
                                      embed_tracks=embed_tracks,
-                                     embed_metadata=embed_metadata)
+                                     embed_metadata=embed_metadata,
+                                     embed_insights=embed_insights)
         if embed is not None:
             fields['embed'] = embed
 
@@ -125,7 +133,8 @@ class Client(object):
     def _get_additional_bundle_list(self, href=None, limit=None,
                                     embed_items=None,
                                     embed_tracks=None,
-                                    embed_metadata=None):
+                                    embed_metadata=None,
+                                    embed_insights=None):
         """Get next, previous, first, last list (page) of available bundles.
 
         'href' the href to retrieve the bundles.
@@ -152,7 +161,8 @@ class Client(object):
         final_embed = helper.process_embed_override(data.get('embed'),
                                                     embed_items,
                                                     embed_tracks,
-                                                    embed_metadata)
+                                                    embed_metadata,
+                                                    embed_insights)
         if final_embed is not None:
             data['embed'] = final_embed
 
@@ -269,13 +279,15 @@ class Client(object):
 
 
     def get_bundle(self, href=None, embed_tracks=False,
-                   embed_metadata=False):
+                   embed_metadata=False, embed_insights=False):
         """Get a bundle.
 
         'href' the relative href to the bundle. May not be None.
         'embed_tracks' determines whether or not to include track
         information in the response.
         'embed_metadata' determines whether or not to include metadata
+        information in the response.
+        'embed_insights' determines whether or not to include insights
         information in the response.
 
         Returns a data structure equivalent to the JSON returned by the API.
@@ -291,7 +303,8 @@ class Client(object):
         fields = {}
         embed = helper.process_embed(embed_items=False,
                                      embed_tracks=embed_tracks,
-                                     embed_metadata=embed_metadata)
+                                     embed_metadata=embed_metadata,
+                                     embed_insights=embed_insights)
         if embed is not None:
             fields['embed'] = embed
 
@@ -614,7 +627,7 @@ class Client(object):
     def search(self, href=None,
                query=None, query_fields=None, query_filter=None,
                limit=None, embed_items=None, embed_tracks=None,
-               embed_metadata=None, language=None):
+               embed_metadata=None, embed_insights=None, language=None):
 
         """Search a media collection.
 
@@ -633,6 +646,10 @@ class Client(object):
                        into the result.
         'embed_metadata' whether or not to expand the bundle metadata
                          into the result.
+        'embed_insights' whether or not to expand the bundle insights
+                         into the result.
+        'language' the 2 letter language code of the language to search
+                         in. Ignored if href is not None.
 
         NB: providing values for 'limit', 'embed_*' will override either
         the API default or the values in the provided href.
@@ -651,11 +668,11 @@ class Client(object):
         if href is None:
             j = self._search_p1(query, query_fields, query_filter, limit,
                                 embed_items, embed_tracks, embed_metadata,
-                                language)
+                                embed_insights, language)
 
         else:
             j = self._search_pn(href, limit, embed_items, embed_tracks,
-                                embed_metadata)
+                                embed_insights, embed_metadata)
 
         # Convert the JSON to a python data struct.
 
@@ -670,7 +687,7 @@ class Client(object):
 
     def _search_p1(self, query=None, query_fields=None, query_filter=None,
                    limit=None, embed_items=None, embed_tracks=None,
-                   embed_metadata=None, language=None):
+                   embed_metadata=None, embed_insights=None, language=None):
         """Function called to retrieve the first page."""
 
         # Prepare the data we're going to include in our query.
@@ -687,7 +704,8 @@ class Client(object):
             fields['limit'] = limit
         embed = helper.process_embed(embed_items=embed_items,
                                      embed_tracks=embed_tracks,
-                                     embed_metadata=embed_metadata)
+                                     embed_metadata=embed_metadata,
+                                     embed_insights=embed_insights)
         if embed is not None:
             fields['embed'] = embed
 
@@ -705,7 +723,8 @@ class Client(object):
 
 
     def _search_pn(self, href=None, limit=None,
-                   embed_items=None, embed_tracks=None, embed_metadata=None):
+                   embed_items=None, embed_tracks=None, embed_metadata=None,
+                   embed_insights=None):
         """Function called to retrieve pages 2-n."""
 
         url_components = urllib.parse.urlparse(href)
@@ -724,7 +743,8 @@ class Client(object):
         final_embed = helper.process_embed_override(data.get('embed'),
                                                     embed_items,
                                                     embed_tracks,
-                                                    embed_metadata)
+                                                    embed_metadata,
+                                                    embed_insights)
         if final_embed is not None:
             data['embed'] = final_embed
 
