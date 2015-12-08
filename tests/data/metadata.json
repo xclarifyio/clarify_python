@@ -1,0 +1,18 @@
+{
+  "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "version": 1,
+  "created": "2015-09-04T21:27:29.744Z",
+  "updated": "2015-09-04T21:27:29.744Z",
+  "data": {
+      "name": "Dorothy and Wizard of Oz Chapter 1"
+  },
+  "_class": "Metadata",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/metadata"
+    },
+    "parent": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    }
+  }
+}

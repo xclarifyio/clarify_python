@@ -1,0 +1,41 @@
+{
+  "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "version": 1,
+  "status": "ready",
+  "created": "2015-09-04T21:27:29.742Z",
+  "updated": "2015-11-25T03:09:15.994Z",
+  "tracks": [
+    {
+      "id": "e148aa90a44642a0b87a2494a13c0c21",
+      "track": 0,
+      "label": "",
+      "media_url": "http://media.clarify.io/audio/books/dorothyandthewizardinoz_01_baum_64kb.mp3",
+      "audio_channel": "",
+      "audio_language": "",
+      "created": "2015-09-04T21:27:29.742Z",
+      "updated": "2015-11-25T03:09:15.994Z",
+      "status": "ready",
+      "mime_type": "audio/mpeg",
+      "media_size": 4296443,
+      "duration": 536.92,
+      "fetch_response_code": 200,
+      "fetch_response_message": "",
+      "media_code": 1000,
+      "media_message": "OK"
+    }
+  ],
+  "_class": "Tracks",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/tracks"
+    },
+    "parent": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    },
+    "items": [
+      {
+        "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/tracks/e148aa90a44642a0b87a2494a13c0c21"
+      }
+    ]
+  }
+}

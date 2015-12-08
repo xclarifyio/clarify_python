@@ -26,18 +26,17 @@ PYTHON_VERSION = '.'.join(str(i) for i in sys.version_info[:3])
 class Client(object):
     """Holds the environment."""
 
-    key = None # Our API key.
-    conn = None # Or connection pool.
-
     def __init__(self, key):
         self.key = key
         self.conn = urllib3.HTTPSConnectionPool(__host__, maxsize=1,
                                                 cert_reqs='CERT_REQUIRED',
                                                 ca_certs=certifi.where())
+        self._last_status = None
 
 
     def get_bundle_list(self, href=None, limit=None, embed_items=None,
-                        embed_tracks=None, embed_metadata=None):
+                        embed_tracks=None, embed_metadata=None,
+                        embed_insights=None):
         """Get a list of available bundles.
 
         'href' the relative href to the bundle list to retriev. If None,
@@ -48,6 +47,8 @@ class Client(object):
         'embed_tracks' whether or not to expand the bundle track data
         into the result.
         'embed_metadata' whether or not to expand the bundle metadata
+        into the result.
+        'embed_insights' whether or not to expand the bundle insights
         into the result.
 
         NB: providing values for 'limit', 'embed_*' will override either
@@ -67,12 +68,14 @@ class Client(object):
             j = self._get_first_bundle_list(limit,
                                             embed_items,
                                             embed_tracks,
-                                            embed_metadata)
+                                            embed_metadata,
+                                            embed_insights)
         else:
             j = self._get_additional_bundle_list(href, limit,
                                                  embed_items,
                                                  embed_tracks,
-                                                 embed_metadata)
+                                                 embed_metadata,
+                                                 embed_insights)
 
         # Convert the JSON to a python data struct.
 
@@ -82,14 +85,16 @@ class Client(object):
     def _get_first_bundle_list(self, limit=None,
                                embed_items=None,
                                embed_tracks=None,
-                               embed_metadata=None):
+                               embed_metadata=None,
+                               embed_insights=None):
         """Get a list of available bundles.
 
         'limit' may be None, which implies API default.  If not None,
         must be > 1.
         'embed_items' True will embed item data in the result.
-        'embed_tracks' True will embed track data in the embeded items.
-        'embed_metadata' True will embed metadata in the embeded items.
+        'embed_tracks' True will embed track data in the embedded items.
+        'embed_metadata' True will embed metadata in the embedded items.
+        'embed_insights' True will embed insights in the embedded items.
 
         Note that including tracks and metadata without including items
         is meaningless.
@@ -107,7 +112,8 @@ class Client(object):
             fields['limit'] = limit
         embed = helper.process_embed(embed_items=embed_items,
                                      embed_tracks=embed_tracks,
-                                     embed_metadata=embed_metadata)
+                                     embed_metadata=embed_metadata,
+                                     embed_insights=embed_insights)
         if embed is not None:
             fields['embed'] = embed
 
@@ -127,7 +133,8 @@ class Client(object):
     def _get_additional_bundle_list(self, href=None, limit=None,
                                     embed_items=None,
                                     embed_tracks=None,
-                                    embed_metadata=None):
+                                    embed_metadata=None,
+                                    embed_insights=None):
         """Get next, previous, first, last list (page) of available bundles.
 
         'href' the href to retrieve the bundles.
@@ -154,7 +161,8 @@ class Client(object):
         final_embed = helper.process_embed_override(data.get('embed'),
                                                     embed_items,
                                                     embed_tracks,
-                                                    embed_metadata)
+                                                    embed_metadata,
+                                                    embed_insights)
         if final_embed is not None:
             data['embed'] = final_embed
 
@@ -171,35 +179,51 @@ class Client(object):
 
         return result
 
-    def bundle_list_map(self, func):
-        """Execute func on every bundle. Func will be called with the bundle href."""
+
+    def bundle_list_map(self, func, bundle_collection=None):
+        """
+        Execute func on every bundle in a collection.
+        Func will be called as func(client, bundle_href).
+        If bundle_collection is None, all bundles will be iterated.
+        Otherwise, bundle_collection can be the model returned from
+        a call to get_bundle_list() or search().
+        If func returns False, the iteration is stopped.
+        """
         has_next = True
         next_href = None  # if None, retrieves first page
+        stopped = False
 
-        while has_next:
+        while has_next and not stopped:
             # Get a page and perform the requested function.
-            bundle_list = self.get_bundle_list(next_href)
-            for i in bundle_list['_links']['items']:
+            if bundle_collection is None:
+                bundle_collection = self.get_bundle_list(next_href)
+            for i in bundle_collection['_links']['items']:
                 href = i['href']
-                func(href)
+                if func(self, href) is False:
+                    stopped = True
+                    break
             # Check for following page.
-            next_href = None
-            if 'next' in bundle_list['_links']:
-                next_href = bundle_list['_links']['next']['href']
-            if next_href is None:
-                has_next = False
+            if not stopped:
+                next_href = None
+                if 'next' in bundle_collection['_links']:
+                    next_href = bundle_collection['_links']['next']['href']
+                    bundle_collection = None
+                if next_href is None:
+                    has_next = False
+
 
     def create_bundle(self, name=None, media_url=None,
-                      audio_channel=None, metadata=None, notify_url=None):
+                      audio_channel=None, metadata=None, notify_url=None,
+                      external_id=None):
         """Create a new bundle.
 
         'metadata' may be None, or an object that can be converted to a JSON
         string.  See API documentation for restrictions.  The conversion
         will take place before the API call.
-        
+
         All other parameters are also optional. For information about these
         see https://api.clarify.io/docs#!/audio/v1audio_post_1.
-        
+
         Returns a data structure equivalent to the JSON returned by the API.
 
         If the response status is not 2xx, throws an APIException.
@@ -222,6 +246,8 @@ class Client(object):
             fields['metadata'] = json.dumps(metadata)
         if notify_url is not None:
             fields['notify_url'] = notify_url
+        if external_id is not None:
+            fields['external_id'] = external_id
 
         if len(fields) > 0:
             data = fields
@@ -256,13 +282,15 @@ class Client(object):
 
 
     def get_bundle(self, href=None, embed_tracks=False,
-                   embed_metadata=False):
+                   embed_metadata=False, embed_insights=False):
         """Get a bundle.
 
         'href' the relative href to the bundle. May not be None.
         'embed_tracks' determines whether or not to include track
         information in the response.
         'embed_metadata' determines whether or not to include metadata
+        information in the response.
+        'embed_insights' determines whether or not to include insights
         information in the response.
 
         Returns a data structure equivalent to the JSON returned by the API.
@@ -278,7 +306,8 @@ class Client(object):
         fields = {}
         embed = helper.process_embed(embed_items=False,
                                      embed_tracks=embed_tracks,
-                                     embed_metadata=embed_metadata)
+                                     embed_metadata=embed_metadata,
+                                     embed_insights=embed_insights)
         if embed is not None:
             fields['embed'] = embed
 
@@ -293,9 +322,10 @@ class Client(object):
         # Convert the JSON to a python data struct.
 
         return self._parse_json(raw_result.json)
-        
+
     def update_bundle(self, href=None, name=None,
-                      notify_url=None, version=None):
+                      notify_url=None, version=None,
+                      external_id=None):
         """Update a bundle.  Note that only the 'name' and 'notify_url' can
         be update.
 
@@ -306,6 +336,8 @@ class Client(object):
         an integer, and the version must match the version of the
         bundle.  If not, a 409 conflict error will cause an APIException
         to be thrown.
+        'external_id' an arbitrary id (string) you can associate with this bundle.
+                      May be None.
 
         Returns a data structure equivalent to the JSON returned by the API.
 
@@ -327,6 +359,8 @@ class Client(object):
             fields['notify_url'] = notify_url
         if version is not None:
             fields['version'] = version
+        if external_id is not None:
+            fields['external_id'] = external_id
 
         if len(fields) > 0:
             data = fields
@@ -352,18 +386,7 @@ class Client(object):
         If the response status is not 2xx, throws an APIException.
         If the JSON to python data struct conversion fails, throws an
         APIDataException."""
-
-        # Argument error checking.
-        assert href is not None
-
-        raw_result = self.get(href)
-
-        if raw_result.status < 200 or raw_result.status > 202:
-            raise APIException(raw_result.status, raw_result.json)
-
-        # Convert the JSON to a python data struct.
-
-        return self._parse_json(raw_result.json)
+        return self._get_simple_model(href)
 
 
     def update_metadata(self, href=None, metadata=None, version=None):
@@ -485,18 +508,7 @@ class Client(object):
         If the response status is not 2xx, throws an APIException.
         If the JSON to python data struct conversion fails, throws an
         APIDataException."""
-
-        # Argument error checking.
-        assert href is not None
-
-        raw_result = self.get(href)
-
-        if raw_result.status < 200 or raw_result.status > 202:
-            raise APIException(raw_result.status, raw_result.json)
-
-        # Convert the JSON to a python data struct.
-
-        return self._parse_json(raw_result.json)
+        return self._get_simple_model(href)
 
 
     def get_track(self, href=None):
@@ -512,16 +524,7 @@ class Client(object):
         APIDataException."""
 
         # Argument error checking.
-        assert href is not None
-
-        raw_result = self.get(href)
-
-        if raw_result.status < 200 or raw_result.status > 202:
-            raise APIException(raw_result.status, raw_result.json)
-
-        # Convert the JSON to a python data struct.
-
-        return self._parse_json(raw_result.json)
+        return self._get_simple_model(href)
 
 
     def delete_track_at_index(self, href=None, index=None):
@@ -572,25 +575,125 @@ class Client(object):
             raise APIException(raw_result.status, raw_result.json)
 
 
+    def get_insights(self, href=None):
+        """Get the insights for a bundle. The result json contains
+        links to the individual insight results which can be
+        fetched with get_insight().
+
+        'href' the relative href to the insights. May not be None.
+
+        Returns a data structure equivalent to the JSON returned by the
+        API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+        return self._get_simple_model(href)
+
+
+    def get_insight(self, href):
+        """Get an insight for a bundle
+
+        'href' the relative href to the insight. The href must be one
+        of the "insight" link relations in the insights model of a
+        bundle. May not be None.
+
+        Returns a data structure equivalent to the JSON returned by the
+        API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+        return self._get_simple_model(href)
+
+
+    def request_insight(self, href, insight):
+        """Requests an insight to be run.
+
+        Normally insights are set to automatically run so you will NOT need
+        to call this method -- use get_insight() instead.
+        However, non-autorun insights can be requested using this method (for
+        example high-accuracy transcripts or closed captions). If the insight
+        has already been run on this bundle, the existing results are returned.
+
+        'href' Is the uri to a bundles insights. May not be None. Typically
+        you will get this from the 'clarify:insights' link relation of a bundle.
+
+        'insight' is the name of the insight you are requesting.
+
+        Returns a data structure equivalent to the JSON returned by the API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+
+        assert href is not None
+        assert insight is not None
+
+        fields = {
+            'insight': insight
+        }
+
+        raw_result = self.post(href, fields)
+
+        if raw_result.status < 200 or raw_result.status > 202:
+            raise APIException(raw_result.status, raw_result.json)
+
+        # Convert the JSON to a python data struct.
+        return self._parse_json(raw_result.json)
+
+
+    def _get_simple_model(self, href=None):
+        """Get a model
+
+        'href' the relative href to the model. May not be None.
+
+        Returns a data structure equivalent to the JSON returned by the
+        API.
+
+        If the response status is not 2xx, throws an APIException.
+        If the JSON to python data struct conversion fails, throws an
+        APIDataException."""
+
+        # Argument error checking.
+        assert href is not None
+
+        raw_result = self.get(href)
+
+        if raw_result.status < 200 or raw_result.status > 202:
+            raise APIException(raw_result.status, raw_result.json)
+
+        # Convert the JSON to a python data struct.
+
+        return self._parse_json(raw_result.json)
+
+
     def search(self, href=None,
                query=None, query_fields=None, query_filter=None,
                limit=None, embed_items=None, embed_tracks=None,
-               embed_metadata=None):
+               embed_metadata=None, embed_insights=None, language=None):
 
         """Search a media collection.
 
         'href' the relative href to the bundle list to retriev. If None,
-        the first bundle list will be returned.
-        'query' See API docs for full description. May not be None.
+               the first bundle list will be returned.
+        'query' See API docs for full description. May not be None if
+                href is None.
         'query_fields' See API docs for full description. May be None.
+                       Ignored if href is not None.
         'query_filter' See API docs for full description. May be None.
+                       Ignored if href is not None.
         'limit' the maximum number of bundles to include in the result.
         'embed_items' whether or not to expand the bundle data into the
-        result.
+                      result.
         'embed_tracks' whether or not to expand the bundle track data
-        into the result.
+                       into the result.
         'embed_metadata' whether or not to expand the bundle metadata
-        into the result.
+                         into the result.
+        'embed_insights' whether or not to expand the bundle insights
+                         into the result.
+        'language' the 2 letter language code of the language to search
+                         in. Ignored if href is not None.
 
         NB: providing values for 'limit', 'embed_*' will override either
         the API default or the values in the provided href.
@@ -608,20 +711,27 @@ class Client(object):
 
         if href is None:
             j = self._search_p1(query, query_fields, query_filter, limit,
-                                embed_items, embed_tracks, embed_metadata)
-                           
+                                embed_items, embed_tracks, embed_metadata,
+                                embed_insights, language)
+
         else:
             j = self._search_pn(href, limit, embed_items, embed_tracks,
-                                embed_metadata)
+                                embed_insights, embed_metadata)
 
         # Convert the JSON to a python data struct.
 
         return self._parse_json(j)
 
 
+    def get_last_status(self):
+        """Returns the HTTP status code of the most recent request made
+        by the client."""
+        return self._last_status
+
+
     def _search_p1(self, query=None, query_fields=None, query_filter=None,
                    limit=None, embed_items=None, embed_tracks=None,
-                   embed_metadata=None):
+                   embed_metadata=None, embed_insights=None, language=None):
         """Function called to retrieve the first page."""
 
         # Prepare the data we're going to include in our query.
@@ -638,7 +748,8 @@ class Client(object):
             fields['limit'] = limit
         embed = helper.process_embed(embed_items=embed_items,
                                      embed_tracks=embed_tracks,
-                                     embed_metadata=embed_metadata)
+                                     embed_metadata=embed_metadata,
+                                     embed_insights=embed_insights)
         if embed is not None:
             fields['embed'] = embed
 
@@ -656,7 +767,8 @@ class Client(object):
 
 
     def _search_pn(self, href=None, limit=None,
-                   embed_items=None, embed_tracks=None, embed_metadata=None):
+                   embed_items=None, embed_tracks=None, embed_metadata=None,
+                   embed_insights=None):
         """Function called to retrieve pages 2-n."""
 
         url_components = urllib.parse.urlparse(href)
@@ -675,7 +787,8 @@ class Client(object):
         final_embed = helper.process_embed_override(data.get('embed'),
                                                     embed_items,
                                                     embed_tracks,
-                                                    embed_metadata)
+                                                    embed_metadata,
+                                                    embed_insights)
         if final_embed is not None:
             data['embed'] = final_embed
 
@@ -702,11 +815,13 @@ class Client(object):
         development efforts."""
 
         user_agent = __api_lib_name__ + '/' + __version__ + '/' + \
-                     PYTHON_VERSION 
+                     PYTHON_VERSION
 
-        return {'Authorization': 'Bearer ' + self.key,
-                'User-Agent': user_agent,
-                'Content-Type': 'application/x-www-form-urlencoded'}
+        headers = {'User-Agent': user_agent,
+                   'Content-Type': 'application/x-www-form-urlencoded'}
+        if self.key:
+            headers['Authorization'] = 'Bearer ' + self.key
+        return headers
 
 
     def get(self, path, data=None):
@@ -731,7 +846,7 @@ class Client(object):
         response = self.conn.request('GET', path, data, self._get_headers())
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         return Result(status=response_status, json=response_content)
@@ -762,7 +877,7 @@ class Client(object):
                                                  self._get_headers(), False)
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         return Result(status=response_status, json=response_content)
@@ -791,7 +906,7 @@ class Client(object):
                                      self._get_headers())
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         # return (status, json)
@@ -804,7 +919,7 @@ class Client(object):
         'path' may not be None. Should include the full path to the
         resoure.
         'data' may be None or a dictionary.
-        
+
         Returns a named tuple that includes:
 
         status: the HTTP status code
@@ -823,7 +938,7 @@ class Client(object):
                                                  self._get_headers(), False)
 
         # Extract the result.
-        response_status = response.status
+        self._last_status = response_status = response.status
         response_content = response.data.decode()
 
         return Result(status=response_status, json=response_content)

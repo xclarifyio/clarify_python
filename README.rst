@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/Clarify/clarify_python.svg
+   :target: https://travis-ci.org/Clarify/clarify_python
+
 ===============================
 Clarify Python 3 Helper Library
 ===============================
@@ -56,7 +59,7 @@ Once you've initialized a Client object, you load a file like this:
 
 	client.create_bundle(name='test bundle', media_url='http://example.com/sample-audio-file.wav')
 
-Naming the bundle is optional.  
+Naming the bundle is optional.
 
 Here are some audio files you can use for testing:
 
@@ -67,7 +70,7 @@ Here are some audio files you can use for testing:
 	http://media.clarify.io/audio/books/dorothyandthewizardinoz_01_baum_64kb.mp3
 
 Hint: You don't have to download these files. Instead you can pass us these urls via the create_bundle() method shown above.
-	
+
 Searching Audio
 ^^^^^^^^^^^^^^^
 
@@ -96,7 +99,7 @@ Then you can process and interact the results however you wish. The code below s
             	print str(search_hit['start']) + ' -- ' + str(search_hit['end'])
 
     	    ++index
-	
+
 And here are the results using the *Wizard of Oz* clip we loaded.
 
 ::

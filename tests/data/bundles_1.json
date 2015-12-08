@@ -1,0 +1,51 @@
+{
+  "total": 18,
+  "limit": 10,
+  "_class": "Collection",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles"
+    },
+    "items": [
+      {
+        "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+      },
+      {
+        "href": "/v1/bundles/2e66255883c24319a7aede9d3e42d8d9"
+      },
+      {
+        "href": "/v1/bundles/094a452e7a264073be187a98f841ecaf"
+      },
+      {
+        "href": "/v1/bundles/a2db75c8991e4f39879cb3eeb4e2fbae"
+      },
+      {
+        "href": "/v1/bundles/1b603e90a5b141379a081707c3fe3082"
+      },
+      {
+        "href": "/v1/bundles/da5a7cbcc54c4561b5be42d6dbbca6ef"
+      },
+      {
+        "href": "/v1/bundles/f174b3fd14f24f9880b154e7a486b103"
+      },
+      {
+        "href": "/v1/bundles/9e18e30dcecb4bef8d885cae85cc4904"
+      },
+      {
+        "href": "/v1/bundles/9898cea88c0541e496ff3a19c8b58f06"
+      },
+      {
+        "href": "/v1/bundles/28c6ba48c43943aea8bc4bb65d26b8d5"
+      }
+    ],
+    "first": {
+      "href": "/v1/bundles?iterator=L1aa00000000000000000000000000000000h0"
+    },
+    "last": {
+      "href": "/v1/bundles?iterator=L1ab00000000000000000000000000000000h0"
+    },
+    "next": {
+      "href": "/v1/bundles?iterator=L1aa28c6ba48c43943aea8bc4bb65d26b8d5h1441402055357"
+    }
+  }
+}

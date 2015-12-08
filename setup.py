@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='clarify_python',
-    version='2.0.0',
+    version='3.0.0',
     description='The Clarify Python 3 Helper Library wraps the entire Clarify API in a Python 3.x Client class.',
     long_description=readme + '\n\n' + history,
     author='Paul Murphy',
@@ -32,8 +32,8 @@ setup(
                  'clarify_python'},
     include_package_data=True,
     install_requires=[
-         'urllib3',
-         'certifi'
+        'urllib3',
+        'certifi'
     ],
     license="MIT",
     zip_safe=False,
@@ -44,6 +44,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         "Programming Language :: Python :: 3",
+    ],
+    tests_require=[
+        'httpretty',
+        'behave>=1.2.5'
     ],
     test_suite='tests',
 )

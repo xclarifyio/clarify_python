@@ -1,0 +1,35 @@
+{
+  "id": "83a371ddf8f34321a3b167d65ad44dfb",
+  "bundle_id": "bd9f12f93d3a4f63a89b4d249427d55f",
+  "name": "classification",
+  "status": "ready",
+  "created": "2015-09-04T21:27:30.675Z",
+  "updated": "2015-11-25T02:09:41.347Z",
+  "track_data": [
+    {
+      "spoken_languages": [
+        "en"
+      ],
+      "acoustics": []
+    }
+  ],
+  "_class": "ClassificationInsight",
+  "_links": {
+    "self": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights/83a371ddf8f34321a3b167d65ad44dfb"
+    },
+    "curies": [
+      {
+        "href": "/docs/rels/{rel}",
+        "name": "clarify",
+        "templated": true
+      }
+    ],
+    "parent": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f/insights"
+    },
+    "clarify:bundle": {
+      "href": "/v1/bundles/bd9f12f93d3a4f63a89b4d249427d55f"
+    }
+  }
+}

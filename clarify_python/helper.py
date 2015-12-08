@@ -2,9 +2,11 @@
 Helper functions.
 """
 
+
 def process_embed(embed_items=None,
                   embed_tracks=None,
-                  embed_metadata=None):
+                  embed_metadata=None,
+                  embed_insights=None):
     """Returns an embed field value based on the parameters."""
 
     result = None
@@ -20,6 +22,10 @@ def process_embed(embed_items=None,
         if embed != '':
             embed += ','
         embed += 'metadata'
+    if embed_insights:
+        if embed != '':
+            embed += ','
+        embed += 'insights'
 
     if embed != '':
         result = embed
@@ -30,12 +36,14 @@ def process_embed(embed_items=None,
 def process_embed_override(href_embed=None,
                            embed_items=None,
                            embed_tracks=None,
-                           embed_metadata=None):
+                           embed_metadata=None,
+                           embed_insights=None):
     """Returns an embed field value based on the parameters."""
     # Our defaults are None, which are the API defaults.
     final_items = None
     final_tracks = None
     final_metadata = None
+    final_insights = None
 
     # First, figure out what was embedded in the original href.
     # If any of the embeds are there, flip the final to True
@@ -46,6 +54,8 @@ def process_embed_override(href_embed=None,
             final_tracks = True
         if 'metadata' in href_embed:
             final_metadata = True
+        if 'insights' in href_embed:
+            final_insights = True
 
     # Second, override the what we have.
     # None >> Do nothing
@@ -66,10 +76,16 @@ def process_embed_override(href_embed=None,
             final_metadata = True
         else:
             final_metadata = None
+    if embed_insights is not None:
+        if embed_insights is True:
+            final_insights = True
+        else:
+            final_insights = None
 
     return process_embed(embed_items=final_items,
                          embed_tracks=final_tracks,
-                         embed_metadata=final_metadata)
+                         embed_metadata=final_metadata,
+                         embed_insights=final_insights)
 
 
 def get_embedded_items(result_collection):
@@ -124,17 +140,17 @@ def get_item_hrefs(result_collection):
                 result.append(item.get('href'))
 
     return result
-    
+
 
 def get_link_href(result_object, link_relation):
     """
     Given a result_object (returned by a previous API call), return
     the link href for a link relation.
-    
+
     'result_object' a JSON object returned by a previous API call. May not
     be None.
     'link_relation' the link relation for which href is required.
-    
+
     Returns None if the link does not exist.
     """
 
@@ -155,13 +171,13 @@ def get_embedded(result_object, link_relation):
     Given a result_object (returned by a previous API call), return
     the embedded object for link_relation.  The returned object can be
     treated as a result object in its own right.
-    
+
     'result_object' a JSON object returned by a previous API call.
     The link relation of teh embedded object must have been specified
     when the result_object was originally requested. May not be None.
     'link_relation' the link relation for which href is required. May
     not be None.
-    
+
     Returns None if the embedded object does not exist.
     """
 
@@ -170,10 +186,9 @@ def get_embedded(result_object, link_relation):
     assert link_relation is not None
 
     result = None
-    
+
     embedded_object = result_object['_embedded']
     if embedded_object:
         result = embedded_object.get(link_relation)
 
     return result
-
