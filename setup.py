@@ -46,7 +46,11 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     tests_require=[
-        'httpretty',
+        # httpretty 0.8.11 breaks due to being unable to find / open
+        # a requirements file
+        # httpretty 0.8.12 breaks due to having invalid python3 lambda
+        # syntax
+        'httpretty<=0.8.10',
         'behave>=1.2.5'
     ],
     test_suite='tests',
