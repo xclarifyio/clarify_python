@@ -46,7 +46,7 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     tests_require=[
-        'httpretty',
+        'httpretty<=0.8.11', # 0.8.12 breaks python3
         'behave>=1.2.5'
     ],
     test_suite='tests',
