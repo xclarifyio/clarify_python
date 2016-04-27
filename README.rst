@@ -132,6 +132,16 @@ From here, we can visualize our search results with the included audio player.  
 	mediaURL = tracks[0]['media_url']
 
 
+Scripts
+----------
+
+You can retrieve all your data from Clarify by running the clarify_export script. This will fetch all bundles, tracks, metadata, and insights and write all the JSON to files on your local disk.
+
+.. code-block:: bash
+
+   $ CLARIFY_API_KEY=your-key clarify_export output_folder
+
+
 History (Change Log)
 --------------------
 
