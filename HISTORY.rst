@@ -3,6 +3,9 @@
 History
 -------
 
+3.1.0 (2016-10-26)
+* Added Python 2.7 support
+
 3.0.2 (2016-04-27)
 * Added clarify_export script
 

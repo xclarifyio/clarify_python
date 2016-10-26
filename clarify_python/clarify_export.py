@@ -63,8 +63,12 @@ def main():
     if not os.path.isdir(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
-    client = clarify.Client(CLARIFY_API_KEY)
-    client.bundle_list_map(process_bundle)
+    try:
+        client = clarify.Client(CLARIFY_API_KEY)
+        client.bundle_list_map(process_bundle)
+    except clarify.APIException as e:
+        print("{0}: {1}".format(e.get_status(), e.get_http_response()))
+        raise
 
 if __name__ == "__main__":
     main()

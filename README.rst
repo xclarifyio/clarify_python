@@ -2,12 +2,12 @@
    :target: https://travis-ci.org/Clarify/clarify_python
 
 ===============================
-Clarify Python 3 Helper Library
+Clarify Python (3.x and 2.7) Helper Library
 ===============================
 
-Python 3.x helper library for the Clarify API
+Python 3.x and 2.7 helper library for the Clarify API
 
-NB: Version 2.x is _not_ compatible with version 1.x.
+NB: Version 2.x of this library is _not_ compatible with version 1.x.
 
 * Free software: MIT license
 

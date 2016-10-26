@@ -1,6 +1,9 @@
 import unittest
 import httpretty
-from urllib.parse import parse_qs
+try:
+    from urllib.parse import parse_qs
+except ImportError:
+     from urlparse import parse_qs
 from clarify_python.clarify import Client
 from clarify_python.helper import get_embedded, get_link_href
 from . import register_uris

@@ -7,7 +7,10 @@ import sys
 import collections
 import urllib3
 import certifi
-import urllib.parse
+try:
+    from urllib.parse import urlparse, parse_qs
+except ImportError:
+    from urlparse import urlparse, parse_qs
 import json
 from clarify_python import helper
 from clarify_python.constants import __version__
@@ -145,9 +148,9 @@ class Client(object):
 
         If the response status is not 2xx, throws an APIException."""
 
-        url_components = urllib.parse.urlparse(href)
+        url_components = urlparse(href)
         path = url_components.path
-        data = urllib.parse.parse_qs(url_components.query)
+        data = parse_qs(url_components.query)
 
         # Change all lists into discrete values.
         for key in data.keys():
@@ -771,9 +774,9 @@ class Client(object):
                    embed_insights=None):
         """Function called to retrieve pages 2-n."""
 
-        url_components = urllib.parse.urlparse(href)
+        url_components = urlparse(href)
         path = url_components.path
-        data = urllib.parse.parse_qs(url_components.query)
+        data = parse_qs(url_components.query)
 
         # Change all lists into discrete values.
         for key in data.keys():
@@ -815,7 +818,7 @@ class Client(object):
         development efforts."""
 
         user_agent = __api_lib_name__ + '/' + __version__ + '/' + \
-                     PYTHON_VERSION
+            PYTHON_VERSION
 
         headers = {'User-Agent': user_agent,
                    'Content-Type': 'application/x-www-form-urlencoded'}

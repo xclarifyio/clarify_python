@@ -1,5 +1,10 @@
+import sys
 import os
 import re
+
+if sys.version_info[0] < 3:
+    from io import open
+
 
 host = 'https://api.clarify.io'
 
