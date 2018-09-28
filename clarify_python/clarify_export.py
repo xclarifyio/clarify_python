@@ -16,11 +16,28 @@ def write_json(basename, typename, content):
         out.write(json.dumps(content, indent=2))
 
 
+def fetch_captions(client, basename, insight_data):
+    for cap_type in ['captions:srt', 'captions:vtt']:
+        href = None
+        link = insight_data['_links'].get(cap_type)
+        if link:
+            href = link[0].get('href')
+
+        if href:
+            data = client.get_data(href)
+            filename = basename + '-captions.' + cap_type[9:]
+            with open(os.path.join(OUTPUT_PATH, filename), 'w') as out:
+                out.write(data)
+
+
 def fetch_insight(client, basename, insights, insight_rel):
     link = get_link_href(insights, insight_rel)
     if link:
         data = client.get_insight(link)
-        write_json(basename, insight_rel[8:], data)
+        if insight_rel == 'insight:captions_r4':
+            fetch_captions(client, basename, data)
+        else:
+            write_json(basename, insight_rel[8:], data)
 
 
 def process_bundle(client, href):
@@ -31,6 +48,7 @@ def process_bundle(client, href):
         name = bundle.get('name')
         if not name:
             name = bundle['id']
+    name = name.replace('/', '-')
 
     basename, file_extension = os.path.splitext(name)
 
@@ -43,11 +61,16 @@ def process_bundle(client, href):
     insights = get_embedded(bundle, 'clarify:insights')
     # print(insights)
     insight_links = insights['_links']
-
+    stop = False
     for link_rel in insight_links.keys():
         # we don't use insight:transcript because it's an alias
         if link_rel.startswith('insight:') and link_rel != 'insight:transcript':
             fetch_insight(client, basename, insights, link_rel)
+        if link_rel == 'insight:captions_r4':
+            stop = True
+
+    if stop:
+        sys.exit(0)
 
 
 def main():
