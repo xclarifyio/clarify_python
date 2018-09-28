@@ -61,16 +61,11 @@ def process_bundle(client, href):
     insights = get_embedded(bundle, 'clarify:insights')
     # print(insights)
     insight_links = insights['_links']
-    stop = False
+
     for link_rel in insight_links.keys():
         # we don't use insight:transcript because it's an alias
         if link_rel.startswith('insight:') and link_rel != 'insight:transcript':
             fetch_insight(client, basename, insights, link_rel)
-        if link_rel == 'insight:captions_r4':
-            stop = True
-
-    if stop:
-        sys.exit(0)
 
 
 def main():
