@@ -646,6 +646,27 @@ class Client(object):
         return self._parse_json(raw_result.json)
 
 
+    def get_data(self, href=None):
+        """Gets data from an insight with data links such as captions.
+
+        'href' the relative href to the data. May not be None.
+
+        Returns the content of the data as a string.
+
+        If the response status is not 2xx, throws an APIException.
+        """
+
+        # Argument error checking.
+        assert href is not None
+
+        raw_result = self.get(href)
+
+        if raw_result.status < 200 or raw_result.status > 202:
+            raise APIException(raw_result.status, raw_result.json)
+
+        return raw_result.json
+
+
     def _get_simple_model(self, href=None):
         """Get a model
 
@@ -1091,4 +1112,3 @@ class APIDataException(Exception):
         considered useful when throwing this exception."""
 
         return self.msg
-

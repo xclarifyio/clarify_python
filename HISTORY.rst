@@ -3,6 +3,9 @@
 History
 -------
 
+3.1.1 (2018-09-28)
+* Added captions to clarify_export script
+
 3.1.0 (2016-10-26)
 * Added Python 2.7 support
 
@@ -65,4 +68,3 @@ with client as the first parameter.
 ++++++++++++++++++
 
 * Port of 1.0.1 python 2 code.
-

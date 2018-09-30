@@ -1,7 +1,6 @@
 language: python
 python:
   - "2.7"
-  - "3.4"
   - "3.5"
 install:
   # We must explicitly install urllib3 into the virtualenv using pip here,
